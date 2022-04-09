@@ -136,6 +136,9 @@ To create a certificate for a admin user:
 ./create-client-certificate.sh email@example.com name_of_cert 365
 ----
 
-docker-compose run --rm pdfas echo 123
+=== TODO:
 
-/app/import/acme/live/bahir.digital/fullchain.pem
+* Test `handy signatur`. The `pdf-as-web` was a little bit adjusted. It runs and can be called in the browser but just to be sure.
+* A `backup-system` needs to be implemented.
+* `ecs` automatically generates 'dummy CA' when none is found. This is used for the `pki` certificates. Maybe we should generate them ourselves? If not `ecs` won't override the genrated ones. If we lose these `CA` files, all the generated `client-certificates` will be invalid.
+* When no `gpg` keys are present, `ecs` uses hardcoded development `gpg` keys. We need to generate and import them into the `./volumes/ecs/gpg` folder.
