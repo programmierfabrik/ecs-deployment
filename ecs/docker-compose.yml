@@ -1,0 +1,105 @@
+version: "3"
+
+services:
+  ecs.web:
+    image: ecs/ecs
+    volumes:
+      - ../volumes/ecs/storage-vault:/app/ecs-storage-vault
+      - ../volumes/ecs/ca:/app/ecs-ca
+      - ../volumes/ecs/gpg:/app/ecs-gpg
+      - ../volumes/ecs/cache:/app/ecs-cache
+    environment:
+      - ECS_USERSWITCHER_ENABLED=true
+      - ECS_SETTINGS=${ECS_SETTINGS}
+    env_file:
+      - ecs.env
+    labels:
+      - 'traefik.http.routers.ecs-web.entryPoints=web'
+      - 'traefik.http.routers.ecs-web.rule=Host(`${HOST}`)'
+      - 'traefik.http.routers.ecs-web-secure.entryPoints=web-secure'
+      - 'traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)'
+      - 'traefik.http.routers.ecs-web-secure.tls=true'
+      - 'traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge'
+    command: simple
+
+  ecs.worker:
+    image: ecs/ecs
+    volumes:
+      - ../volumes/ecs/storage-vault:/app/ecs-storage-vault
+      - ../volumes/ecs/ca:/app/ecs-ca
+      - ../volumes/ecs/gpg:/app/ecs-gpg
+      - ../volumes/ecs/cache:/app/ecs-cache
+    environment:
+      - ECS_SETTINGS=${ECS_SETTINGS}
+    env_file:
+      - ecs.env
+    depends_on:
+      - ecs.web
+      - redis
+    command: worker
+
+  ecs.smtpd:
+    image: ecs/ecs
+    environment:
+      - ECS_SETTINGS=${ECS_SETTINGS}
+    env_file:
+      - ecs.env
+    command: smtpd
+    labels:
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp.tls=true"
+      - "traefik.tcp.routers.smtp.entrypoints=smtp"
+      - "traefik.tcp.routers.smtp.service=smtp"
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=25"
+      - "traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=1"
+      - "traefik.tcp.routers.smtp-ssl.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp-ssl.tls=true"
+      - "traefik.tcp.routers.smtp-ssl.entrypoints=smtp-ssl"
+      - "traefik.tcp.routers.smtp-ssl.service=smtp-ssl"
+      - "traefik.tcp.services.smtp-ssl.loadbalancer.server.port=465"
+      - "traefik.tcp.services.smtp-ssl.loadbalancer.proxyProtocol.version=1"
+
+  ecs.beat:
+    image: ecs/ecs
+    environment:
+      - ECS_SETTINGS=${ECS_SETTINGS}
+    env_file:
+      - ecs.env
+    depends_on:
+      - ecs.worker
+    command: run /app/env/bin/celery -A ecs beat -l info
+
+  memcached:
+    image: memcached
+    command: memcached -m 128m -I 5m
+    # max-memory= 128mb, max-item-size= 5mb
+
+  redis:
+    image: redis:3
+    volumes:
+      - ../volumes/redis:/data
+
+  pdfas:
+    build:
+      context: pdfas
+      # args:
+      #   - http_proxy
+    image: ecs/pdfas
+    # mem limit= -Xmx1024m + 120m
+    mem_limit: 1144m
+    environment:
+      - HOSTNAME=${HOST}
+    volumes:
+      - "../volumes/acme:/app/import/acme:ro"
+    labels:
+      - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
+      - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
+      - 'traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure'
+      - 'traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
+      - 'traefik.http.routers.ecs-pdfas-secure.tls=true'
+      - 'traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge'
+
+networks:
+  default:
+    external:
+      name: ecs-reverse-proxy

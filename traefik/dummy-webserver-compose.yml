@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  dummy_webserver:
+    image: traefik/whoami:latest
+    container_name: dummy_webserver
+    labels:
+      - "traefik.http.routers.whoami.entryPoints=web-secure"
+      - "traefik.http.routers.whoami.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certResolver=mytlschallenge"
+
+networks:
+  default:
+    external:
+      name: ecs-reverse-proxy

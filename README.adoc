@@ -1,0 +1,141 @@
+= ECS Deployment
+
+== Requirements
+
+To run this deployment all you need is `docker` and `docker-compose` and the correct `DNS` entries.
+Please add these records to your domain name (replace <ip> & <domain> with the ip and domain name of the machine):
+
+[source,txt]
+----
+@       IN  A   <ip>
+@       IN  MX  1  <domain>.
+@       IN  TXT "v=spf1 mx ~all"
+_dmarc  IN  TXT "v=DMARC1; p=quarantine"
+----
+
+Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found
+
+== First time setup
+
+Please follow the order of the docker-compose files for the first setup. Otherwise the files will be created in the wrong order.
+Create a env file and set the variables:
+
+[source,bash]
+----
+cp example.env .env
+nano .env
+----
+
+=== Docker network
+
+This deployment consist of multiple `docker-compose.yml` which need to communicate with each other.
+For that we create a docker network:
+
+[source,bash]
+----
+sudo docker network create ecs-reverse-proxy
+----
+
+=== Traefik reverse proxy
+
+No container is connected to the outside world. With the reverse proxy all the needed containers can be exposed:
+
+[source,bash]
+----
+cd traefik
+sudo docker-compose up -d
+----
+
+But traefik won't request a certifcate from letencrypt unless it is needed. So we will start a dummy server:
+
+[source,bash]
+----
+sudo docker-compose -f dummy-webserver-compose.yml up -d
+----
+
+Now go to your webbrowser and open `https://<domain>`. This page will display information about this machine.
+Now you can stop this dummy server again:
+
+[source,bash]
+----
+sudo docker-compose -f dummy-webserver-compose.yml down
+cd ..
+----
+
+Just to be safe you can check out the content of `acme.json` for your domain:
+
+[source,bash]
+----
+sudo cat volumes/acme/acme.json
+----
+
+=== Postgres database
+
+Just start the database:
+
+[source,bash]
+----
+cd database
+sudo docker-compose up -d
+cd ..
+----
+
+=== Mailserver
+
+Next start the mailserver and create a dummy email (test@<domain>).
+This is needed to generate a DKIM.
+As this mailserver is not exposed to the internet and only used for sending mails, the dummy email should not be a security risk:
+
+[source,bash]
+----
+cd mailserver
+sudo docker-compose up -d
+cd ../scripts
+. ../.env && docker exec -e HOST=${HOST} -it ecs_mailserver \
+  /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
+./setup.sh config dkim
+cd ..
+----
+
+=== ECS
+
+Now comes the the `ecs` itself. First we need to apply the migrations form django and then start `ecs`:
+
+[source,bash]
+----
+cd ecs
+sudo docker-compose run --no-deps --rm --name ecs.migration ecs.web migrate
+sudo docker-compose up -d
+cd ..
+----
+
+=== DKIM
+
+Finally we need to set the `DKIM` record. Execute the following to get the `DKIM` record:
+
+[source,bash]
+----
+. ./.env && sudo cat ./volumes/docker-mailserver/config/opendkim/keys/${HOST}/mail.txt
+----
+
+=== Scripts
+
+All the scripts are located in `./scripts`.
+
+To create a admin user:
+
+[source,bash]
+----
+./create-internal-user.sh email@example.com first_name last_name m|f
+----
+
+To create a certificate for a admin user:
+
+[source,bash]
+----
+./create-client-certificate.sh email@example.com name_of_cert 365
+----
+
+docker-compose run --rm pdfas echo 123
+
+/app/import/acme/live/bahir.digital/fullchain.pem

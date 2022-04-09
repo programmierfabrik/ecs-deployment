@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mailserver:
+    image: docker.io/mailserver/docker-mailserver:latest
+    container_name: ecs_mailserver
+    hostname: ${HOST}
+    environment:
+      - LOG_LEVEL=debug
+      - PERMIT_DOCKER=host
+      - ENABLE_AMAVIS=0
+      - SMTP_ONLY=1
+      - SSL_TYPE=letsencrypt
+      # - POSTFIX_INET_PROTOCOLS=ipv4
+    volumes:
+      - ../volumes/docker-mailserver/mail-data/:/var/mail/
+      - ../volumes/docker-mailserver/mail-state/:/var/mail-state/
+      - ../volumes/docker-mailserver/mail-logs/:/var/log/mail/
+      - ../volumes/docker-mailserver/config/:/tmp/docker-mailserver/
+      - ../volumes/acme/:/etc/letsencrypt/
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    stop_grace_period: 1m
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+
+networks:
+  default:
+    external:
+      name: ecs-reverse-proxy

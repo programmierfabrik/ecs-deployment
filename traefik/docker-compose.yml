@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:v2.7
+    container_name: traefik-reverse-proxy
+    command:
+      # Only dynamic configuration, can be empty so this is optional
+      - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "25:25"
+      - "465:465"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/etc/traefik/traefik.toml
+      - ../volumes/acme:/etc/traefik/acme
+    restart: always
+
+networks:
+  default:
+    external:
+      name: ecs-reverse-proxy

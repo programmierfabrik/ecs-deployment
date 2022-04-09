@@ -1,0 +1,24 @@
+# Entry points
+[entryPoints.web]
+  address = ":80"
+[entryPoints.web-secure]
+  address = ":443"
+[entryPoints.smtp]
+  address = ":25"
+[entryPoints.smtp-ssl]
+  address = ":465"
+
+# Redirect 80 to 443
+[entryPoints.web.http.redirections.entryPoint]
+  to = "web-secure"
+  permanent = true
+  scheme = "https"
+
+[global]
+  sendAnonymousUsage = false
+
+[providers.docker]
+
+[certificatesResolvers.mytlschallenge.acme]
+  storage = '/etc/traefik/acme/acme.json'
+  tlsChallenge = true
