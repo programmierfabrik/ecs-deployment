@@ -3,7 +3,7 @@
 == Requirements
 
 To run this deployment all you need is `docker` and `docker-compose` and the correct `DNS` entries.
-Please add these records to your domain name (replace <ip> & <domain> with the ip and domain name of the machine):
+Please add these records to your domain name (replace `<ip>` & `<domain>` with the ip and domain name of the machine):
 
 [source,txt]
 ----
@@ -13,12 +13,12 @@ Please add these records to your domain name (replace <ip> & <domain> with the i
 _dmarc  IN  TXT "v=DMARC1; p=quarantine"
 ----
 
-Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found
+Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found.
 
 == First time setup
 
 Please follow the order of the docker-compose files for the first setup. Otherwise the files will be created in the wrong order.
-Create a env file and set the variables:
+Create a `.env` file and set the variables:
 
 [source,bash]
 ----
@@ -53,7 +53,7 @@ But traefik won't request a certifcate from letencrypt unless it is needed. So w
 sudo docker-compose -f dummy-webserver-compose.yml up -d
 ----
 
-Now go to your webbrowser and open `https://<domain>`. This page will display information about this machine.
+Now go to your web-browser and open `https://<domain>`. This page will display information about this machine.
 Now you can stop this dummy server again:
 
 [source,bash]
@@ -82,8 +82,8 @@ cd ..
 
 === Mailserver
 
-Next start the mailserver and create a dummy email (test@<domain>).
-This is needed to generate a DKIM.
+Next start the mailserver and create a dummy email (`test@<domain>`).
+This is needed to generate `DKIM`.
 As this mailserver is not exposed to the internet and only used for sending mails, the dummy email should not be a security risk:
 
 [source,bash]
@@ -118,7 +118,7 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 . ./.env && sudo cat ./volumes/docker-mailserver/config/opendkim/keys/${HOST}/mail.txt
 ----
 
-=== Scripts
+== Scripts
 
 All the scripts are located in `./scripts`.
 
@@ -136,9 +136,9 @@ To create a certificate for a admin user:
 ./create-client-certificate.sh email@example.com name_of_cert 365
 ----
 
-=== TODO:
+== TODO:
 
 * Test `handy signatur`. The `pdf-as-web` was a little bit adjusted. It runs and can be called in the browser but just to be sure.
 * A `backup-system` needs to be implemented.
 * `ecs` automatically generates 'dummy CA' when none is found. This is used for the `pki` certificates. Maybe we should generate them ourselves? If not `ecs` won't override the genrated ones. If we lose these `CA` files, all the generated `client-certificates` will be invalid.
-* When no `gpg` keys are present, `ecs` uses hardcoded development `gpg` keys. We need to generate and import them into the `./volumes/ecs/gpg` folder.
+* When no `gpg` keys are present, `ecs` uses hardcoded development `gpg` keys. We need to generate and import them into the `./volumes/ecs/gpg` folder. Or we could drop the `storage-vault` encryption
