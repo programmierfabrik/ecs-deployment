@@ -9,7 +9,7 @@ services:
       - ../volumes/ecs/gpg:/app/ecs-gpg
       - ../volumes/ecs/cache:/app/ecs-cache
     environment:
-      - ECS_USERSWITCHER_ENABLED=true
+      - ECS_USERSWITCHER_ENABLED=${ECS_USERSWITCHER_ENABLED:-false}
       - ECS_SETTINGS=${ECS_SETTINGS}
     env_file:
       - ecs.env
