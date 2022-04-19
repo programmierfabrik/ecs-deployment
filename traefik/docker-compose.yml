@@ -10,11 +10,11 @@ services:
       - '25:25'
       - '465:465'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ../volumes/acme:/etc/traefik/acme
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.toml:/etc/traefik/traefik.toml:ro
       - ./dynamic.toml:/etc/traefik/dynamic.toml:ro
-      - ../volumes/ecs/ca/:/etc/ecs-ca/:ro
+      - ../data/ecs/ca/:/etc/ecs-ca/:ro
+      - ../data/acme:/etc/traefik/acme
     restart: always
 
 networks:

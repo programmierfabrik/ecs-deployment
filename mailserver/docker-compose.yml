@@ -13,11 +13,11 @@ services:
       - SSL_TYPE=letsencrypt
       # - POSTFIX_INET_PROTOCOLS=ipv4
     volumes:
-      - ../volumes/docker-mailserver/mail-data/:/var/mail/
-      - ../volumes/docker-mailserver/mail-state/:/var/mail-state/
-      - ../volumes/docker-mailserver/mail-logs/:/var/log/mail/
-      - ../volumes/docker-mailserver/config/:/tmp/docker-mailserver/
-      - ../volumes/acme/:/etc/letsencrypt/
+      - ../data/docker-mailserver/mail-data/:/var/mail/
+      - ../data/docker-mailserver/mail-state/:/var/mail-state/
+      - ../data/docker-mailserver/mail-logs/:/var/log/mail/
+      - ../data/docker-mailserver/config/:/tmp/docker-mailserver/
+      - ../data/acme/:/etc/letsencrypt/
       - /etc/localtime:/etc/localtime:ro
     restart: always
     stop_grace_period: 1m

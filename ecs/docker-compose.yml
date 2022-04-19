@@ -4,9 +4,9 @@ services:
   ecs.web:
     image: ecs/ecs
     volumes:
-      - ../volumes/ecs/storage-vault:/app/ecs-storage-vault
-      - ../volumes/ecs/ca:/app/ecs-ca
-      - ../volumes/ecs/cache:/app/ecs-cache
+      - ../data/ecs/storage-vault:/app/ecs-storage-vault
+      - ../data/ecs/ca:/app/ecs-ca
+      - ../data/volatile/ecs-cache:/app/ecs-cache
     env_file:
       - ecs.env
       - .env
@@ -23,9 +23,9 @@ services:
   ecs.worker:
     image: ecs/ecs
     volumes:
-      - ../volumes/ecs/storage-vault:/app/ecs-storage-vault
-      - ../volumes/ecs/ca:/app/ecs-ca
-      - ../volumes/ecs/cache:/app/ecs-cache
+      - ../data/ecs/storage-vault:/app/ecs-storage-vault
+      - ../data/ecs/ca:/app/ecs-ca
+      - ../data/volatile/ecs-cache:/app/ecs-cache
     env_file:
       - ecs.env
       - .env
@@ -71,7 +71,7 @@ services:
   redis:
     image: redis:3
     volumes:
-      - ../volumes/redis:/data
+      - ../data/volatile/redis:/data
 
   pdfas:
     build:
@@ -84,7 +84,7 @@ services:
     environment:
       - HOSTNAME=${HOST}
     volumes:
-      - "../volumes/acme:/app/import/acme:ro"
+      - "../data/acme:/app/import/acme:ro"
     labels:
       - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
       - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
