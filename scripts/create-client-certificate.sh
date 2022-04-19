@@ -40,7 +40,7 @@ u = User.objects.get(email=email)
 cert, passphrase = Certificate.create_for_user(
     '/tmp/user.p12', u, cn=certname, days=daysvalid)
 pkcs12 = open('/tmp/user.p12', 'rb').read()
-# os.remove('/tmp/user.p12')
+os.remove('/tmp/user.p12')
 
 deliver(u.email,
     subject='Certificate {}'.format(certname),
