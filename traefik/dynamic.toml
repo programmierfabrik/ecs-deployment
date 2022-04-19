@@ -1,0 +1,6 @@
+[tls.options.default.clientAuth]
+  caFiles = ["/etc/ecs-ca/ca.cert.pem"]
+  clientAuthType = "VerifyClientCertIfGiven"
+
+[http.middlewares.passtlsclientcert.passtlsclientcert]
+  pem = true

@@ -22,3 +22,6 @@
 [certificatesResolvers.mytlschallenge.acme]
   storage = '/etc/traefik/acme/acme.json'
   tlsChallenge = true
+
+[providers.file]
+  filename = "/etc/traefik/dynamic.toml"
