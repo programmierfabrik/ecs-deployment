@@ -1,0 +1,181 @@
+version: '3'
+
+services:
+
+  #####################
+  # Postgres Database #
+  #####################
+
+  database:
+    image: postgres:12-alpine
+    container_name: ecs_database
+    restart: always
+    environment:
+      - POSTGRES_USER=ecs
+      - POSTGRES_PASSWORD=ecs
+      - POSTGRES_DATABASE=ecs
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  ##############
+  # Mailserver #
+  ##############
+
+  mailserver:
+    image: mailserver/docker-mailserver:10.5
+    container_name: ecs_mailserver
+    restart: always
+    hostname: ${HOST} # Replace me with environment variable
+    environment:
+      - LOG_LEVEL=debug
+      - PERMIT_DOCKER=host
+      - ENABLE_AMAVIS=0
+      - SMTP_ONLY=1
+      - SSL_TYPE=letsencrypt
+    volumes:
+      - ./data/mailserver/mail-data/:/var/mail/
+      - ./data/mailserver/mail-state/:/var/mail-state/
+      - ./data/mailserver/mail-logs/:/var/log/mail/
+      - ./data/mailserver/config/:/tmp/docker-mailserver/
+      - ./data/acme/:/etc/letsencrypt/
+      - /etc/localtime:/etc/localtime:ro
+    stop_grace_period: 1m
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+
+  #########################
+  # Traefik Reverse Proxy #
+  #########################
+
+  reverse-proxy:
+    image: traefik:v2.7
+    container_name: ecs_reverse-proxy
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-conf/traefik.toml:/etc/traefik/traefik.toml:ro
+      - ./traefik-conf/dynamic.toml:/etc/traefik/dynamic.toml:ro
+      - ./data/ecs/ca/:/etc/ecs-ca/:ro
+      - ./data/acme:/etc/traefik/acme
+    ports:
+      - '80:80'
+      - '443:443'
+      - '25:25'
+      - '465:465'
+
+  #######
+  # ECS #
+  #######
+
+  ecs.web:
+    image: ecs/ecs
+    container_name: ecs_web
+    restart: always
+    env_file:
+      - ecs.env
+      - .env
+    volumes:
+      - ./data/ecs/storage-vault:/app/ecs-storage-vault
+      - ./data/ecs/ca:/app/ecs-ca
+      - ./volatile/ecs-cache:/app/ecs-cache
+    labels:
+      - 'traefik.http.routers.ecs-web.entryPoints=web'
+      - 'traefik.http.routers.ecs-web.rule=Host(`${HOST}`)'
+      - 'traefik.http.routers.ecs-web-secure.entryPoints=web-secure'
+      - 'traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)'
+      - 'traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file'
+      - 'traefik.http.routers.ecs-web-secure.tls=true'
+      - 'traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge'
+    command: simple
+    depends_on:
+      - database
+
+  ecs.worker:
+    image: ecs/ecs
+    container_name: ecs_worker
+    restart: always
+    env_file:
+      - ecs.env
+      - .env
+    volumes:
+      - ./data/ecs/storage-vault:/app/ecs-storage-vault
+      - ./data/ecs/ca:/app/ecs-ca
+      - ./volatile/ecs-cache:/app/ecs-cache
+    command: worker
+    depends_on:
+      - ecs.web
+      - redis
+
+  ecs.smtpd:
+    image: ecs/ecs
+    container_name: ecs_smtpd
+    restart: always
+    env_file:
+      - ecs.env
+      - .env
+    labels:
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp.tls=true"
+      - "traefik.tcp.routers.smtp.entrypoints=smtp"
+      - "traefik.tcp.routers.smtp.service=smtp"
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=25"
+      - "traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=1"
+      - "traefik.tcp.routers.smtp-ssl.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp-ssl.tls=true"
+      - "traefik.tcp.routers.smtp-ssl.entrypoints=smtp-ssl"
+      - "traefik.tcp.routers.smtp-ssl.service=smtp-ssl"
+      - "traefik.tcp.services.smtp-ssl.loadbalancer.server.port=465"
+      - "traefik.tcp.services.smtp-ssl.loadbalancer.proxyProtocol.version=1"
+    command: smtpd
+    depends_on:
+      - ecs.web
+
+  ecs.beat:
+    image: ecs/ecs
+    container_name: ecs_beat
+    restart: always
+    env_file:
+      - ecs.env
+      - .env
+    command: run /app/env/bin/celery -A ecs beat -l info
+    depends_on:
+      - ecs.web
+      - redis
+
+  memcached:
+    image: memcached
+    container_name: ecs_memcached
+    restart: always
+    command: memcached -m 128m -I 5m
+
+  redis:
+    image: redis:3
+    container_name: ecs_redis
+    restart: always
+    volumes:
+      - ./volatile/redis:/data
+
+  pdfas:
+    build:
+      context: pdfas
+    image: ecs/pdfas
+    container_name: ecs_pdfas
+    restart: always
+    environment:
+      - HOSTNAME=${HOST}
+    volumes:
+      - "./data/acme:/app/import/acme:ro"
+    labels:
+      - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
+      - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
+      - 'traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure'
+      - 'traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
+      - 'traefik.http.routers.ecs-pdfas-secure.tls=true'
+      - 'traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge'
+    mem_limit: 1144m
+
+networks:
+  default:
+    external:
+      name: ecs-reverse-proxy

@@ -22,7 +22,7 @@ certname="$2"
 if test "$2" = ""; then usage; fi
 if test "$3" != ""; then daysvalid=$3; fi
 
-cat << EOF | docker exec -i ecs_ecs.web_1 /start run ./manage.py shell
+cat << EOF | docker exec -i ecs_web /start run ./manage.py shell
 
 email="$email"; certname="$certname"; daysvalid=$daysvalid;
 
