@@ -73,7 +73,6 @@ services:
     container_name: ecs_web
     restart: always
     env_file:
-      - ecs.env
       - .env
     volumes:
       - ./data/ecs/storage-vault:/app/ecs-storage-vault
@@ -96,7 +95,6 @@ services:
     container_name: ecs_worker
     restart: always
     env_file:
-      - ecs.env
       - .env
     volumes:
       - ./data/ecs/storage-vault:/app/ecs-storage-vault
@@ -112,7 +110,6 @@ services:
     container_name: ecs_smtpd
     restart: always
     env_file:
-      - ecs.env
       - .env
     labels:
       - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
@@ -136,7 +133,6 @@ services:
     container_name: ecs_beat
     restart: always
     env_file:
-      - ecs.env
       - .env
     command: run /app/env/bin/celery -A ecs beat -l info
     depends_on:
