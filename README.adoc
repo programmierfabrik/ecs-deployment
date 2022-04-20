@@ -17,14 +17,86 @@ Also don't forget to set the reverse lookup. Almost all mail services rejects em
 
 == First time setup
 
-Please follow the order of the docker-compose files for the first setup. Otherwise the files will be created in the wrong order.
-Create a `.env` file and set the variables:
+Please follow the order of scripts for the first setup. Otherwise the files will be created in the wrong order.
+Create a `.env` file:
 
 [source,bash]
 ----
-cp example.env .env
-nano .env
+./scripts/generate-env.sh domain.name
 ----
+
+This will generate a .env file with the following variables:
+
+.Basic Variables
+[cols="1,1,1"]
+|===
+|Variable Name, header row |Example Value, header row |Description, header row
+
+|HOST
+|example.com
+|This is used for the reverse proxy. With this variable the request is resolved to the correct container with the correct host header. This also make it possible to use `let's encrypt`
+
+|ECS_COMMISSION_UUID
+|ecececececececececececececececec
+|The `ECS` needs this variable to determine which ethic commission this instance belongs to. See https://ecs-org.github.io/ecs-docs/admin-manual/configuration.html#selecting-the-ethics-commission-uuid[here] for all the `uuids`. Don't forget to set this variable
+|===
+
+.Hardcoded Production Variables
+[cols="1,1,1"]
+|===
+|Variable Name, header row |Value, header row |Description, header row
+
+|ECS_PROD
+|true
+|`Django` sets all the necessary settings for a production environment when `ECS_PROD` is true.
+
+|ECS_USERSWITCHER_ENABLED
+|true
+|whether the user switch is enable or disabled
+
+|ECS_DOMAIN
+|${HOST}
+|Resolves to the `HOST` variable. `Django` needs a `DOMAIN` variable for the `ALLOWED_HOSTS`.
+
+|DATABASE_URL
+|postgres://ecs:ecs@database:5432/ecs
+|Postgres URI for connecting to the `database` container
+
+|REDIS_URL
+|redis://redis:6379/0
+|Redis URI for connecting to the `redis` container
+
+|MEMCACHED_URL
+|memcached://memcached:11211
+|Memcached URI for connecting to the `memcached` container
+
+|SMTP_URL
+|smtp://mailserver:25
+|Smtp URI for connecting to the `mailserver` container
+
+|===
+
+.Generated Variables
+[cols="1,1"]
+|===
+|Variable Name, header row |Description, header row
+
+|ECS_SECRET_KEY
+|`Django` specific secret key
+
+|ECS_REGISTRATION_SECRET
+|`Django` specific secret key
+
+|ECS_PASSWORD_RESET_SECRET
+|`Django` specific secret key
+
+|ECS_VAULT_ENCRYPT
+|Used for encrypting and decrypting files in the `storage-vault`
+
+|ECS_VAULT_SIGN
+|Used for encrypting and decrypting files in the `storage-vault`
+
+|===
 
 === Docker network
 
