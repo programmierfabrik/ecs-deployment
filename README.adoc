@@ -25,7 +25,7 @@ Create a `.env` file:
 ./scripts/generate-env.sh domain.name
 ----
 
-This will generate a .env file with the following variables:
+This will generate a `.env` file with the following variables:
 
 .Basic Variables
 [cols="1,1,1"]
