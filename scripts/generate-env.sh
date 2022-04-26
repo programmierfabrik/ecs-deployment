@@ -2,7 +2,7 @@
 
 usage(){
     cat << EOF
-Usage:  $0 domain.name
+Usage: $0 domain.name
 
 Generate a .env file for a production deployment.
 EOF
