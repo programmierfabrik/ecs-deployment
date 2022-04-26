@@ -204,7 +204,7 @@ Trigger a backup manually:
 
 [source,bash]
 ----
-sudo docker exec ecs_backup backup
+sudo docker exec ecs_backup /etc/periodic/daily/jobrunner
 ----
 
 === Restore backup

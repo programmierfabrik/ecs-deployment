@@ -176,7 +176,7 @@ services:
   ##########
 
   backup:
-    image: ghcr.io/tecnativa/docker-duplicity-docker:2.2.0
+    image: ghcr.io/tecnativa/docker-duplicity-postgres:2.2.0
     container_name: ecs_backup
     restart: unless-stopped
     hostname: ecs.backup
@@ -185,12 +185,18 @@ services:
       OPTIONS: --no-encryption --full-if-older-than=1W
       TZ: Europe/Vienna
       DST: file:///backup
+      PGHOST: database
+      PGPASSWORD: ecs
+      PGUSER: ecs
+      JOB_100_WHAT: pg_dump -Fc -Z0 | gzip > $${SRC}/dump/ecs.pgdump.gz
+      JOB_100_WHEN: daily
       JOB_200_WHAT: backup
       JOB_200_WHEN: daily
       JOB_300_WHAT: dup remove-all-but-n-full 4 --force $$DST
       JOB_300_WHEN: daily
     volumes:
       - ./data/ecs/storage-vault:/mnt/backup/src/storage-vault:ro
+      - ./data/ecs/dump:/mnt/backup/src/dump
       - ./backup:/backup
 
 networks:
