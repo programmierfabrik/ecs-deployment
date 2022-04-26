@@ -120,7 +120,7 @@ The database is empty. We will need to fill it with migrations:
 
 [source,bash]
 ----
-sudo docker-compose run --no-deps --rm --name ecs.migration ecs.web migrate
+sudo docker-compose run --rm ecs.web migrate
 ----
 
 === Traefik reverse proxy
