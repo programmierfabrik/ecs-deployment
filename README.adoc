@@ -189,6 +189,62 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 . ./.env && sudo cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
 ----
 
+== Backup (need to verify)
+
+Backup is automatically started when doing:
+
+[source,bash]
+----
+sudo docker-compose up -d
+----
+
+=== Manual backup
+
+Trigger a backup manually:
+
+[source,bash]
+----
+sudo docker exec ecs_backup backup
+----
+
+=== Restore backup
+
+We will restore the backups to `./restore`:
+
+[source,bash]
+----
+docker run --rm \
+  -v $PWD/restore:/mnt/backup/src \
+  -v $PWD/backup:/backup \
+  -e TZ=Europe/Vienna -e OPTIONS=--no-encryption -e DST=file:///backup \
+  ghcr.io/tecnativa/docker-duplicity-docker:2.2.0 restore
+----
+
+After that you can copy the `restore/storage-vault` to `data/ecs/storage-vault` and apply the `sql`:
+
+[source,bash]
+----
+TODO
+----
+
+=== Stop backup
+
+To stop the backup for some reason:
+
+[source,bash]
+----
+sudo docker-compose stop backup
+----
+
+=== Start backup
+
+To start it again:
+
+[source,bash]
+----
+sudo docker-compose start backup
+----
+
 == Scripts
 
 All the scripts are located in `./scripts`.
