@@ -171,6 +171,26 @@ services:
       - 'traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge'
     mem_limit: 1144m
 
+  ##########
+  # Backup #
+  ##########
+
+  backup:
+    image: ghcr.io/tecnativa/docker-duplicity-docker:2.2.0
+    hostname: ecs.backup
+    restart: always
+    environment:
+      CRONTAB_DAILY: 0 22 * * *
+      OPTIONS: --no-encryption --full-if-older-than=1W
+      TZ: Europe/Vienna
+      DST: file:///backup
+      JOB_200_WHAT: backup
+      JOB_200_WHEN: daily
+      JOB_300_WHAT: dup remove-all-but-n-full 4 --force $$DST
+      JOB_300_WHEN: daily
+    volumes:
+      - ./backup:/backup
+
 networks:
   default:
     external:
