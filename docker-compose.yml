@@ -198,6 +198,8 @@ services:
       - ./data/ecs/storage-vault:/mnt/backup/src/storage-vault:ro
       - ./data/ecs/dump:/mnt/backup/src/dump
       - ./backup:/backup
+    depends_on:
+      - database
 
 networks:
   default:
