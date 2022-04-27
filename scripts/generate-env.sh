@@ -37,9 +37,9 @@ cat << EOF > ./.env
 # ===== Basic Variables
 HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
+ECS_USERSWITCHER_ENABLED=false
 # ===== Hardcoded Production Variables
 ECS_PROD=true
-ECS_USERSWITCHER_ENABLED=false
 ECS_DOMAIN=\${HOST}
 DATABASE_URL=postgres://ecs:ecs@database:5432/ecs
 REDIS_URL=redis://redis:6379/0

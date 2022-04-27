@@ -39,6 +39,10 @@ This will generate a `.env` file with the following variables:
 |ECS_COMMISSION_UUID
 |ecececececececececececececececec
 |The `ECS` needs this variable to determine which ethic commission this instance belongs to. See https://ecs-org.github.io/ecs-docs/admin-manual/configuration.html#selecting-the-ethics-commission-uuid[here] for all the `uuids`. Don't forget to set this variable
+
+|ECS_USERSWITCHER_ENABLED
+|false
+|whether the user switch is enable or disabled (This should only be true in a staging environment)
 |===
 
 .Hardcoded Production Variables
@@ -49,10 +53,6 @@ This will generate a `.env` file with the following variables:
 |ECS_PROD
 |true
 |`Django` sets all the necessary settings for a production environment when `ECS_PROD` is true.
-
-|ECS_USERSWITCHER_ENABLED
-|true
-|whether the user switch is enable or disabled
 
 |ECS_DOMAIN
 |${HOST}
