@@ -1,3 +1,5 @@
+:table-caption!:
+:toc:
 = ECS Deployment
 
 == Requirements
@@ -30,7 +32,7 @@ This will generate a `.env` file with the following variables:
 .Basic Variables
 [cols="1,1,1"]
 |===
-|Variable Name, header row |Example Value, header row |Description, header row
+|Variable Name |Example Value |Description
 
 |HOST
 |example.com
@@ -42,13 +44,13 @@ This will generate a `.env` file with the following variables:
 
 |ECS_USERSWITCHER_ENABLED
 |false
-|whether the user switch is enable or disabled (This should only be true in a staging environment)
+|whether the user switch is enable or disabled (This should only be `true` in a staging environment)
 |===
 
 .Hardcoded Production Variables
 [cols="1,1,1"]
 |===
-|Variable Name, header row |Value, header row |Description, header row
+|Variable Name |Value |Description
 
 |ECS_PROD
 |true
@@ -79,7 +81,7 @@ This will generate a `.env` file with the following variables:
 .Generated Variables
 [cols="1,1"]
 |===
-|Variable Name, header row |Description, header row
+|Variable Name |Description
 
 |ECS_SECRET_KEY
 |`Django` specific secret key
