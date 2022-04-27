@@ -53,3 +53,4 @@ Temporary Items
 /backup
 /restore
 /dump
+/ecs.pgdump.gz
