@@ -314,4 +314,4 @@ The System is now migrated!
 == TODO:
 
 * Test `handy signatur`. The `pdf-as-web` was a little bit adjusted. It runs and can be called in the browser but just to be sure.
-* A `backup-system` needs to be implemented.
+* Test `backup` and `migration` on a new machine
