@@ -1,5 +1,6 @@
 :table-caption!:
 :toc:
+:toclevels: 1
 = ECS Deployment
 
 == Requirements
