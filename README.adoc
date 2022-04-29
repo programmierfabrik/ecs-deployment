@@ -18,6 +18,18 @@ _dmarc  IN  TXT "v=DMARC1; p=quarantine"
 
 Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found.
 
+== Temporary selfbuild
+
+For now we have no pipeline that builds the ecs. Instead build it locally:
+
+[source,bash]
+----
+git clone https://github.com/programmierfabrik/ecs
+cd ecs
+git checkout origin/feature/deployment-adjustments
+docker build -t ecs/ecs .
+----
+
 == First time setup [[first_time_setup]]
 
 Please follow the order of scripts for the first setup. Otherwise the files will be created in the wrong order.
