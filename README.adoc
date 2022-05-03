@@ -208,14 +208,7 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 . ./.env && sudo cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
 ----
 
-== Backup (need to verify)
-
-Backup is automatically started when doing:
-
-[source,bash]
-----
-sudo docker-compose up -d
-----
+== Backup
 
 === Rsync setup [[rsync_setup]]
 
@@ -255,7 +248,7 @@ sudo docker exec ecs_backup /etc/periodic/daily/jobrunner
 
 === Restore backup
 
-We will restore the backups to `./restore`:
+If your data is saved remotely copy it to the `./backup` folder. We will restore the backups to `./restore`:
 
 [source,bash]
 ----
@@ -266,11 +259,21 @@ docker run --rm \
   ghcr.io/tecnativa/docker-duplicity-docker:2.2.0 restore
 ----
 
-After that you can copy the `restore/storage-vault` to `data/ecs/storage-vault` and apply the `sql`:
+After that you can copy `./restore/storage-vault` to `./data/ecs/storage-vault` and apply the `sql`:
 
 [source,bash]
 ----
-TODO
+cat ./restore/dump/ecs.pgdump.gz | gzip -d | \
+  sudo docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
+  bash -c "pg_restore -1 -O -F c -n public -d ecs"
+mv ./restore/storage-vault/* ./data/ecs/storage-vault/
+----
+
+Simple cleanup:
+
+[source,bash]
+----
+sudo rm -rf backup/ restore/
 ----
 
 === Stop backup
@@ -299,14 +302,14 @@ To create a admin user:
 
 [source,bash]
 ----
-./create-internal-user.sh email@example.com first_name last_name m|f
+./scripts/create-internal-user.sh email@example.com first_name last_name m|f
 ----
 
 To create a certificate for a admin user:
 
 [source,bash]
 ----
-./create-client-certificate.sh email@example.com name_of_cert 365
+./scripts/create-client-certificate.sh email@example.com name_of_cert 365
 ----
 
 == Migrations
