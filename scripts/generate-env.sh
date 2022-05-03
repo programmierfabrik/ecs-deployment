@@ -38,6 +38,7 @@ cat << EOF > ./.env
 HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
 ECS_USERSWITCHER_ENABLED=false
+BACKUP_URI=file:///local-backup
 # ===== Hardcoded Production Variables
 ECS_PROD=true
 ECS_DOMAIN=\${HOST}

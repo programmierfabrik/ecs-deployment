@@ -184,7 +184,7 @@ services:
       CRONTAB_DAILY: 0 22 * * *
       OPTIONS: --no-encryption --full-if-older-than=1W
       TZ: Europe/Vienna
-      DST: file:///backup
+      DST: ${BACKUP_URI}
       PGHOST: database
       PGPASSWORD: ecs
       PGUSER: ecs
@@ -197,7 +197,8 @@ services:
     volumes:
       - ./data/ecs/storage-vault:/mnt/backup/src/storage-vault:ro
       - ./data/ecs/dump:/mnt/backup/src/dump
-      - ./backup:/backup
+      - ./backup:/local-backup
+      - ./data/.ssh/:/root/.ssh
     depends_on:
       - database
 

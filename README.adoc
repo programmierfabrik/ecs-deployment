@@ -18,6 +18,8 @@ _dmarc  IN  TXT "v=DMARC1; p=quarantine"
 
 Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found.
 
+IMPORTANT: This documentation assumes you are in the root of this deployment folder.
+
 == Temporary selfbuild
 
 For now we have no pipeline that builds the ecs. Instead build it locally:
@@ -58,6 +60,10 @@ This will generate a `.env` file with the following variables:
 |ECS_USERSWITCHER_ENABLED
 |false
 |whether the user switch is enable or disabled (This should only be `true` in a staging environment)
+
+|BACKUP_URI
+|file:///local-backup
+|The link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[Duplicity URI] where the backup files will be saved. There always be a `./backup` folder. If this variable is set to `file:///local-backup`, the backups will be saved to this folder. If you want to use `rsync` please refer to link:#rsync_setup[Rsync setup])
 |===
 
 .Hardcoded Production Variables
@@ -210,6 +216,33 @@ Backup is automatically started when doing:
 ----
 sudo docker-compose up -d
 ----
+
+=== Rsync setup [[rsync_setup]]
+
+Almost all of the link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[Duplicity URL Formats] need no extra configuration. This means you can specifiy the `password` & `username` in the URI itself. `rsync over ssh` on the other hand needs a ssh key file. Lets generate a key:
+
+[source,bash]
+----
+sudo mkdir ./data/.ssh
+sudo chmod 700 ./data/.ssh
+sudo ssh-keygen -b 4096 -t rsa -f ./data/.ssh/id_rsa -q -N ""
+----
+
+Now your backup storage needs to trust this key. If you are using `hetzner` you can use `upload-key-to-hetzner.sh`. If you are using something else, look at the documentation on how to authenticate with ssh keys:
+
+[source,bash]
+----
+./scripts/upload-key-to-hetzner.sh u123456
+----
+
+Now set the `BACKUP_URI`. An example for `hetzner` would be:
+
+[source,bash]
+----
+BACKUP_URI=rsync://u123456@u123456.your-storagebox.de:23/<./path/to/existing/folder>
+----
+
+Rsync is over the port 23 and the path MUST start with `./` and the folder MUST exist.
 
 === Manual backup
 
