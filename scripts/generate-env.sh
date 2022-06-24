@@ -39,6 +39,7 @@ HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
 ECS_USERSWITCHER_ENABLED=false
 BACKUP_URI=file:///local-backup
+ACME_EMAIL=ecs.support@programmierfabrik.at
 # ===== Hardcoded Production Variables
 ECS_PROD=true
 ECS_DOMAIN=\${HOST}

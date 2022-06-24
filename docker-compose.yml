@@ -63,6 +63,8 @@ services:
       - '443:443'
       - '25:25'
       - '465:465'
+    command:
+      - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
 
   #######
   # ECS #

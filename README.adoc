@@ -64,6 +64,10 @@ This will generate a `.env` file with the following variables:
 |BACKUP_URI
 |file:///local-backup
 |The link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[Duplicity URI] where the backup files will be saved. There always be a `./backup` folder. If this variable is set to `file:///local-backup`, the backups will be saved to this folder. If you want to use `rsync` please refer to link:#rsync_setup[Rsync setup])
+
+|ACME_EMAIL
+|ecs.support@programmierfabrik.at
+|Let's encrypt will send an email to this person when the certificate is about to expire and when the certificate is refreshed
 |===
 
 .Hardcoded Production Variables
