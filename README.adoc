@@ -119,27 +119,13 @@ This will generate a `.env` file with the following variables:
 
 === Docker network
 
-We need to create a docker network for the deployment:
-
-[source,bash]
-----
-sudo docker network create ecs-reverse-proxy
-----
-
 === Postgres database
 
 Start the database:
 
 [source,bash]
 ----
-sudo docker-compose up -d database
-----
-
-The database is empty. We will need to fill it with migrations:
-
-[source,bash]
-----
-sudo docker-compose run --rm ecs.web migrate
+docker-compose up -d database
 ----
 
 === Traefik reverse proxy
@@ -148,14 +134,14 @@ No container is connected to the outside world. With the reverse proxy all the n
 
 [source,bash]
 ----
-sudo docker-compose up -d reverse-proxy
+docker-compose up -d reverse-proxy
 ----
 
 But traefik won't request a certifcate from letencrypt unless it is needed. So we will start a dummy server:
 
 [source,bash]
 ----
-sudo docker-compose -f dummy-webserver-compose.yml up -d
+docker-compose -f dummy-webserver-compose.yml up -d
 ----
 
 Now go to your web-browser and open `https://<domain>`. This page will display information about this machine.
@@ -163,14 +149,14 @@ Now you can stop this dummy server again:
 
 [source,bash]
 ----
-sudo docker-compose -f dummy-webserver-compose.yml down
+docker-compose -f dummy-webserver-compose.yml down
 ----
 
 Just to be safe you can check out the content of `acme.json` for your domain:
 
 [source,bash]
 ----
-sudo cat ./data/acme/acme.json
+cat ./data/acme/acme.json
 ----
 
 === Mailserver
@@ -181,7 +167,7 @@ As this mailserver is not exposed to the internet and only used for sending mail
 
 [source,bash]
 ----
-sudo docker-compose up -d mailserver
+docker-compose up -d mailserver
 . ./.env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
 ./scripts/setup.sh config dkim
@@ -193,8 +179,8 @@ Now comes the `ecs` itself. Just to be safe, we will restart everything:
 
 [source,bash]
 ----
-sudo docker-compose down
-sudo docker-compose up -d
+docker-compose down
+docker-compose up -d
 ----
 
 === DKIM
@@ -203,7 +189,7 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 
 [source,bash]
 ----
-. ./.env && sudo cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
+. ./.env && cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
 ----
 
 == Backup
@@ -214,9 +200,9 @@ Almost all of the link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[
 
 [source,bash]
 ----
-sudo mkdir ./data/.ssh
-sudo chmod 700 ./data/.ssh
-sudo ssh-keygen -b 4096 -t rsa -f ./data/.ssh/id_rsa -q -N ""
+mkdir ./data/.ssh
+chmod 700 ./data/.ssh
+ssh-keygen -b 4096 -t rsa -f ./data/.ssh/id_rsa -q -N ""
 ----
 
 Now your backup storage needs to trust this key. If you are using `hetzner` you can use `upload-key-to-hetzner.sh`. If you are using something else, look at the documentation on how to authenticate with ssh keys:
@@ -241,7 +227,7 @@ Trigger a backup manually:
 
 [source,bash]
 ----
-sudo docker exec ecs_backup /etc/periodic/daily/jobrunner
+docker exec ecs_backup /etc/periodic/daily/jobrunner
 ----
 
 === Restore backup
@@ -262,7 +248,7 @@ After that you can copy `./restore/storage-vault` to `./data/ecs/storage-vault` 
 [source,bash]
 ----
 cat ./restore/dump/ecs.pgdump.gz | gzip -d | \
-  sudo docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
+  docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
   bash -c "pg_restore -1 -O -F c -n public -d ecs"
 mv ./restore/storage-vault/* ./data/ecs/storage-vault/
 ----
@@ -271,7 +257,7 @@ Simple cleanup:
 
 [source,bash]
 ----
-sudo rm -rf backup/ restore/
+rm -rf backup/ restore/
 ----
 
 === Stop backup
@@ -280,7 +266,7 @@ To stop the backup for some reason:
 
 [source,bash]
 ----
-sudo docker-compose stop backup
+docker-compose stop backup
 ----
 
 === Start backup
@@ -289,7 +275,7 @@ To start it again:
 
 [source,bash]
 ----
-sudo docker-compose start backup
+docker-compose start backup
 ----
 
 == Scripts
@@ -338,7 +324,7 @@ Follow the link:#first_time_setup[First time setup] until you need to apply the 
 [source,bash]
 ----
 cat ecs.pgdump.gz | gzip -d | \
-  sudo docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
+  docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
   bash -c "pg_restore -1 -O -F c -n public -d ecs"
 ----
 
