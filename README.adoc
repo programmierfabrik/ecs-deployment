@@ -92,7 +92,7 @@ This will generate a `.env` file with the following variables:
 |Redis URI for connecting to the `redis` container
 
 |MEMCACHED_URL
-|memcached://memcached:11211
+|memcached:11211
 |Memcached URI for connecting to the `memcached` container
 
 |SMTP_URL
