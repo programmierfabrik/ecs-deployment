@@ -20,6 +20,16 @@ Also don't forget to set the reverse lookup. Almost all mail services rejects em
 
 IMPORTANT: This documentation assumes you are in the root of this deployment folder.
 
+== Install Docker & Docker-Compose
+
+.Install Docker and create an alias for the docker-compose
+[source,txt]
+----
+curl -fsSL https://get.docker.com | bash
+echo "alias docker-compose='docker compose'" >> ~/.bashrc
+source ~/.bashrc
+----
+
 == Temporary selfbuild
 
 For now we have no pipeline that builds the ecs. Instead build it locally:
