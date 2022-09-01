@@ -30,7 +30,7 @@ ECS_PROD=true
 ECS_DOMAIN=\${HOST}
 DATABASE_URL=postgres://ecs:ecs@database:5432/ecs
 REDIS_URL=redis://redis:6379/0
-MEMCACHED_URL=memcached://memcached:11211
+MEMCACHED_URL=memcached:11211
 SMTP_URL=smtp://mailserver:25
 # ===== Generated Variables
 ECS_SECRET_KEY=$ECS_SECRET_KEY
