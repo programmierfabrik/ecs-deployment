@@ -91,7 +91,7 @@ services:
     command: daphne -b 0.0.0.0 ecs.asgi:application
     depends_on:
       - database
-      - ecs_memcached
+      - memcached
 
   ecs.worker:
     image: ecs/ecs
