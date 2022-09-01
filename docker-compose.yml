@@ -77,9 +77,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data/ecs/storage-vault:/app/ecs-storage-vault
-      - ./data/ecs/ca:/app/ecs-ca
-      - ./volatile/ecs-cache:/app/ecs-cache
+      - ./data/ecs:/opt/ecs/data
+      - ./volatile/ecs:/opt/ecs/volatile
     labels:
       - 'traefik.http.routers.ecs-web.entryPoints=web'
       - 'traefik.http.routers.ecs-web.rule=Host(`${HOST}`)'
@@ -100,9 +99,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data/ecs/storage-vault:/app/ecs-storage-vault
-      - ./data/ecs/ca:/app/ecs-ca
-      - ./volatile/ecs-cache:/app/ecs-cache
+      - ./data/ecs:/opt/ecs/data
+      - ./volatile/ecs:/opt/ecs/volatile
     command: celery -A ecs worker -l info
     depends_on:
       - ecs.web
