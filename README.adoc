@@ -115,12 +115,6 @@ This will generate a `.env` file with the following variables:
 |ECS_PASSWORD_RESET_SECRET
 |`Django` specific secret key
 
-|ECS_VAULT_ENCRYPT
-|Used for encrypting and decrypting files in the `storage-vault`
-
-|ECS_VAULT_SIGN
-|Used for encrypting and decrypting files in the `storage-vault`
-
 |===
 
 === Docker network
@@ -331,8 +325,6 @@ Generate a `.env` and set the variables based on the `env.yml`. This would inclu
 * ECS_SECRET_KEY
 * ECS_REGISTRATION_SECRET
 * ECS_PASSWORD_RESET_SECRET
-* ECS_VAULT_ENCRYPT
-* ECS_VAULT_SIGN
 
 Copy the `/data/ecs-pgdump/ecs.pgdump.gz` from the old machine to the new one. This could be done like this:
 
