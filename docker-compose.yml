@@ -88,9 +88,10 @@ services:
       - 'traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file'
       - 'traefik.http.routers.ecs-web-secure.tls=true'
       - 'traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge'
-    command: simple
+    command: daphne -b 0.0.0.0 ecs.asgi:application
     depends_on:
       - database
+      - ecs_memcached
 
   ecs.worker:
     image: ecs/ecs
@@ -102,7 +103,7 @@ services:
       - ./data/ecs/storage-vault:/app/ecs-storage-vault
       - ./data/ecs/ca:/app/ecs-ca
       - ./volatile/ecs-cache:/app/ecs-cache
-    command: worker
+    command: celery -A ecs worker -l info
     depends_on:
       - ecs.web
       - redis
@@ -126,7 +127,7 @@ services:
       - "traefik.tcp.routers.smtp-ssl.service=smtp-ssl"
       - "traefik.tcp.services.smtp-ssl.loadbalancer.server.port=465"
       - "traefik.tcp.services.smtp-ssl.loadbalancer.proxyProtocol.version=1"
-    command: smtpd
+    command: ./manage.py smtpd -l info
     depends_on:
       - ecs.web
 
@@ -136,7 +137,7 @@ services:
     restart: always
     env_file:
       - .env
-    command: run /app/env/bin/celery -A ecs beat -l info
+    command: celery -A ecs beat -l info
     depends_on:
       - ecs.web
       - redis
@@ -206,5 +207,4 @@ services:
 
 networks:
   default:
-    external:
-      name: ecs-reverse-proxy
+    name: ecs-reverse-proxy
