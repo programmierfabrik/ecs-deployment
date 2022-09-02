@@ -44,10 +44,17 @@ Create a `alias` for `docker-compose` and write your `ssh-keys`:
 ----
 su - ecs
 echo "alias docker-compose='docker compose'" >> ~/.bashrc
-source ~/.bashrc
 mkdir .ssh
 nano .ssh/authorized_keys
 ----
+
+Close the connection to the server and connect with `ecs`. Clone this repo:
+
+[source,bash]
+----
+git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
+----
+
 
 == Temporary selfbuild
 
