@@ -155,7 +155,7 @@ This will generate a `.env` file with the following variables:
 
 === Docker network
 
-=== Postgres database
+=== Postgres, Redis & Memecached databases
 
 Start the databases:
 
@@ -182,20 +182,7 @@ No container is connected to the outside world. With the reverse proxy all the n
 docker-compose up -d reverse-proxy
 ----
 
-But traefik won't request a certifcate from letencrypt unless it is needed. So we will start a dummy server:
-
-[source,bash]
-----
-docker-compose -f dummy-webserver-compose.yml up -d
-----
-
-Now go to your web-browser and open `https://<domain>`. This page will display information about this machine.
-Now you can stop this dummy server again:
-
-[source,bash]
-----
-docker-compose -f dummy-webserver-compose.yml down
-----
+Now go to your web-browser and open `https://<domain>` so the https certificate is fetched by traefik.
 
 Just to be safe you can check out the content of `acme.json` for your domain:
 
@@ -225,6 +212,15 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 [source,bash]
 ----
 . ./.env && cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
+----
+
+=== Rest
+
+Now start the rest of the container:
+
+[source,bash]
+----
+docker-compose up -d
 ----
 
 == Backup
