@@ -20,6 +20,35 @@ Also don't forget to set the reverse lookup. Almost all mail services rejects em
 
 IMPORTANT: This documentation assumes you are in the root of this deployment folder.
 
+== Ubuntu Setup
+
+Install Docker:
+
+[source,bash]
+----
+curl -fsSL https://get.docker.com | bash
+----
+
+Create a user called `ecs` and give him `sudo` without password and `docker` without `sudo`:
+
+[source,bash]
+-----
+useradd -m -s /bin/bash ecs
+echo 'ecs ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
+usermod -aG docker ecs
+-----
+
+Create a `alias` for `docker-compose` and write your `ssh-keys`:
+
+[source,bash]
+----
+su - ecs
+echo "alias docker-compose='docker compose'" >> ~/.bashrc
+source ~/.bashrc
+mkdir .ssh
+nano .ssh/authorized_keys
+----
+
 == Temporary selfbuild
 
 For now we have no pipeline that builds the ecs. Instead build it locally:
@@ -121,11 +150,20 @@ This will generate a `.env` file with the following variables:
 
 === Postgres database
 
-Start the database:
+Start the databases:
 
 [source,bash]
 ----
-docker-compose up -d database
+docker-compose up -d database memcached redis
+----
+
+=== ECS
+
+Now we start the main `ecs`. This will apply migrations on start and execute the bootstrap:
+
+[source,bash]
+----
+docker-compose up -d ecs.web
 ----
 
 === Traefik reverse proxy
@@ -171,16 +209,6 @@ docker-compose up -d mailserver
 . ./.env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
 ./scripts/setup.sh config dkim
-----
-
-=== ECS
-
-Now comes the `ecs` itself. Just to be safe, we will restart everything:
-
-[source,bash]
-----
-docker-compose down
-docker-compose up -d
 ----
 
 === DKIM
