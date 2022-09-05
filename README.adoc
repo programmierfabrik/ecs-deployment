@@ -200,7 +200,7 @@ As this mailserver is not exposed to the internet and only used for sending mail
 [source,bash]
 ----
 docker-compose up -d mailserver
-. ./.env && docker exec -e HOST=${HOST} -it ecs_mailserver \
+. .env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
 ./scripts/setup.sh config dkim
 ----
@@ -211,7 +211,7 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 
 [source,bash]
 ----
-. ./.env && cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
+. .env && cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
 ----
 
 === Rest
