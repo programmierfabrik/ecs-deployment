@@ -211,7 +211,7 @@ Finally we need to set the `DKIM` record. Execute the following to get the `DKIM
 
 [source,bash]
 ----
-. .env && cat ./data/mailserver/config/opendkim/keys/${HOST}/mail.txt
+sudo cat ./data/mailserver/config/opendkim/keys/*/mail.txt
 ----
 
 === Rest
