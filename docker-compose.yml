@@ -7,7 +7,7 @@ services:
   #####################
 
   database:
-    image: postgres:12-alpine
+    image: postgres:14.5-alpine
     container_name: ecs_database
     restart: always
     environment:
@@ -22,7 +22,7 @@ services:
   ##############
 
   mailserver:
-    image: mailserver/docker-mailserver:10.5
+    image: mailserver/docker-mailserver:11.1
     container_name: ecs_mailserver
     restart: always
     environment:
@@ -49,7 +49,7 @@ services:
   #########################
 
   reverse-proxy:
-    image: traefik:v2.7
+    image: traefik:v2.8.4
     container_name: ecs_reverse-proxy
     restart: always
     volumes:
@@ -141,13 +141,13 @@ services:
       - redis
 
   memcached:
-    image: memcached
+    image: memcached:1.6-alpine
     container_name: ecs_memcached
     restart: always
     command: memcached -m 128m -I 5m
 
   redis:
-    image: redis:3
+    image: redis:7.0-alpine
     container_name: ecs_redis
     restart: always
     volumes:
