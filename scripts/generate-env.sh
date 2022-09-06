@@ -22,6 +22,7 @@ cat << EOF > ./.env
 # ===== Basic Variables
 HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
+ECS_REQUIRE_CLIENT_CERTS=true
 ECS_USERSWITCHER_ENABLED=false
 BACKUP_URI=file:///local-backup
 ACME_EMAIL=ecs.support@programmierfabrik.at

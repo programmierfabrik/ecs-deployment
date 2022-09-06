@@ -93,6 +93,11 @@ This will generate a `.env` file with the following variables:
 |ecececececececececececececececec
 |The `ECS` needs this variable to determine which ethic commission this instance belongs to. See https://ecs-org.github.io/ecs-docs/admin-manual/configuration.html#selecting-the-ethics-commission-uuid[here] for all the `uuids`. Don't forget to set this variable
 
+|ECS_REQUIRE_CLIENT_CERTS
+|true
+|whether the admin users need a certificate or not (This should only be `false` in a staging / test environment)
+
+
 |ECS_USERSWITCHER_ENABLED
 |false
 |whether the user switch is enable or disabled (This should only be `true` in a staging environment)
