@@ -188,13 +188,13 @@ Just to be safe you can check out the content of `acme.json` for your domain:
 
 [source,bash]
 ----
-cat ./data/acme/acme.json
+sudo cat ./data/acme/acme.json
 ----
 
 === Mailserver
 
 Next start the mailserver and create a dummy email (`test@<domain>`).
-This is needed to generate a `DKIM`.
+This is needed to generate a `DKIM`. Also configure postfix so it works with bare domains.
 As this mailserver is not exposed to the internet and only used for sending mails, the dummy email should not be a security risk:
 
 [source,bash]
@@ -202,6 +202,7 @@ As this mailserver is not exposed to the internet and only used for sending mail
 docker-compose up -d mailserver
 . .env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
+echo 'mydestination = localhost.$mydomain, localhost' | sudo tee -a ./data/mailserver/config/postfix-main.cf
 ./scripts/setup.sh config dkim
 ----
 
@@ -216,7 +217,7 @@ sudo cat ./data/mailserver/config/opendkim/keys/*/mail.txt
 
 === Rest
 
-Now start the rest of the container:
+Start the remaining containers:
 
 [source,bash]
 ----
