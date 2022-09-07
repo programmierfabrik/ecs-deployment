@@ -20,7 +20,6 @@ RUN sed /usr/local/tomcat/conf/server.xml -r -i \
 
 COPY pdf-as-web.properties /app/pdf-as-web/pdf-as-web.properties.tmpl
 COPY pdfas-catalina.sh /app/pdf-as-web/pdfas-catalina.sh
-COPY isrgrootx1.pem /app/import/isrgrootx1.pem
 RUN  chmod +x /app/pdf-as-web/pdfas-catalina.sh
 
 CMD ["/app/pdf-as-web/pdfas-catalina.sh", "run"]
