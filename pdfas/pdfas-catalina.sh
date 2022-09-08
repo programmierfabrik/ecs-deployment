@@ -2,7 +2,7 @@
 set -e
 # customize hostname
 config=/app/pdf-as-web/pdf-as-web.properties
-sed "s/HOSTNAME/$HOSTNAME/g" ${config}.tmpl > ${config}
+sed "s/HOSTNAME_PDFAS/$HOSTNAME_PDFAS/g" ${config}.tmpl > ${config}
 
 # Disable expired let's encrypt certificates and download the new one
 sed -i -e 's|mozilla/DST_Root_CA_X3.crt|#mozilla/DST_Root_CA_X3.crt|g' /etc/ca-certificates.conf

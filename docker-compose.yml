@@ -160,7 +160,7 @@ services:
     container_name: ecs_pdfas
     restart: always
     environment:
-      - HOSTNAME=${HOST}
+      - HOSTNAME_PDFAS=${HOST}
     volumes:
       - "./data/acme:/app/import/acme:ro"
     labels:

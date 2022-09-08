@@ -2,7 +2,7 @@ FROM tomcat:8.5.15-jre8
 # to be used with an frontend ssl webserver, expects input is comming from https
 # run script expects a fullchain server ssl cert at /import/server.cert.pem
 
-ENV HOSTNAME localhost
+ENV HOSTNAME_PDFAS localhost
 ENV CATALINA_OPTS "-Xms350m -Xmx1024m -Dpdf-as-web.conf=/app/pdf-as-web/pdf-as-web.properties"
 
 RUN mkdir -p /app/pdf-as-web /app/import
