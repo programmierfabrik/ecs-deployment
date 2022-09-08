@@ -165,7 +165,7 @@ services:
       - "./data/acme:/app/import/acme:ro"
     labels:
       - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
-      - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && (PathPrefix(`/pdf-as-web`) || PathPrefix(`bkuonline`))'
+      - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && (PathPrefix(`/pdf-as-web`) || PathPrefix(`/bkuonline`))'
       - 'traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure'
       - 'traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
       - 'traefik.http.routers.ecs-pdfas-secure.tls=true'
