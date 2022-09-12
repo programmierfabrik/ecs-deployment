@@ -358,7 +358,7 @@ Copy the `/data/ecs-pgdump/ecs.pgdump.gz` from the old machine to the new one. T
 scp root@old.machine:/data/ecs-pgdump/ecs.pgdump.gz ./
 ----
 
-Follow the link:#first_time_setup[First time setup] until you need to apply the migrations. Instead of applying the migration, apply the dump from the old machine:
+Start the only the databases and apply the dump from the old machine:
 
 [source,bash]
 ----
