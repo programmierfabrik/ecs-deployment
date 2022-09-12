@@ -13,6 +13,11 @@ if [ -z "$1" ]; then
     usage
 fi
 
+if test -f "./.env"; then
+    echo ".env already exists..."
+    exit 1
+fi
+
 HOST=$1
 ECS_SECRET_KEY=$(openssl rand -base64 39)
 ECS_REGISTRATION_SECRET=$(openssl rand -base64 39)
