@@ -25,6 +25,7 @@ ECS_PASSWORD_RESET_SECRET=$(openssl rand -base64 39)
 
 cat << EOF > ./.env
 # ===== Basic Variables
+TAG=
 HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
 ECS_REQUIRE_CLIENT_CERTS=true

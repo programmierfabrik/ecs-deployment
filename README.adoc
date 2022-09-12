@@ -87,6 +87,10 @@ This will generate a `.env` file with the following variables:
 |===
 |Variable Name |Example Value |Description
 
+|TAG
+|
+|Define which `tag` will be used for `ghcr.io/programmierfabrik/ecs`. See https://github.com/programmierfabrik/ecs/pkgs/container/ecs/versions[tags]
+
 |HOST
 |example.com
 |This is used for the reverse proxy. With this variable the request is resolved to the correct container with the correct host header. This also make it possible to use `let's encrypt`

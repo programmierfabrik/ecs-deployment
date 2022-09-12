@@ -72,7 +72,7 @@ services:
   #######
 
   ecs.web:
-    image: ecs/ecs
+    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
     container_name: ecs_web
     restart: always
     env_file:
@@ -94,7 +94,7 @@ services:
       - memcached
 
   ecs.worker:
-    image: ecs/ecs
+    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
     container_name: ecs_worker
     restart: always
     env_file:
@@ -108,7 +108,7 @@ services:
       - redis
 
   ecs.smtpd:
-    image: ecs/ecs
+    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
     container_name: ecs_smtpd
     restart: always
     env_file:
@@ -131,7 +131,7 @@ services:
       - ecs.web
 
   ecs.beat:
-    image: ecs/ecs
+    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
     container_name: ecs_beat
     restart: always
     env_file:
