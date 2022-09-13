@@ -373,11 +373,29 @@ cat ecs.pgdump.gz | gzip -d | \
 
 Continue with the link:#first_time_setup[First time setup]
 
-When you are done, all the directories should be now generated and we can migrate the `storage-vault`:
+When you are done, all the directories should be now generated and we can migrate the `storage-vault`.
+Create the directory `decrypt` and create the files `vault_encrypt` and `vault_sign` (see `env.yml`). Also copy the `storage-vault` to this folder:
 
 [source,bash]
 ----
-rsync -r root@old.machine:/data/ecs-storage-vault/ ./data/ecs/storage-vault
+mkdir decrypt
+touch vault_encrypt vault_sign
+rsync -r root@old.machine:/data/ecs-storage-vault/ ./decrypt/storage-vault
 ----
 
-The System is now migrated!
+Now you can start the decrypt process:
+
+[source,bash]
+----
+./script/decrypt-storage-vault.sh
+----
+
+After it is done, you can move the `storage-vault` to its proper location and delete all files that were needed for the decryption:
+
+[source,bash]
+----
+mv ./decrypt/storage-vault ./data/ecs/storage-vault
+rm -rf ./decrypt/
+----
+
+The System is now migrated and you can continue with the link:#first_time_setup[First time setup]!
