@@ -19,7 +19,7 @@ else
 fi
 
 # Check if storage_vault exists
-if [[ -d "./decrypt/storage_vault" ]]; then
+if [[ -d "./decrypt/storage-vault" ]]; then
     echo "storage_vault exist..."
 else
     usage
