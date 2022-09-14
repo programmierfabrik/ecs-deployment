@@ -20,9 +20,9 @@ Also don't forget to set the reverse lookup. Almost all mail services rejects em
 
 For machines with not a permanent `IP Address` the host will create a entry in `/etc/hosts` with `127.0.1.1 hostname.domain hostname`. This will lead to issues as the docker network uses the name resolver of the host. This leads to the container resolving the hostname of the hostmachine to 127.0.1.1 instead of the ip of the machine. Change the `127.0.1.1` to the `IP Address` of the server.
 
-IMPORTANT: This documentation assumes you are in the root of this deployment folder.
-
 == Ubuntu Setup
+
+IMPORTANT: This documentation assumes you are in the root of this deployment folder.
 
 Install Docker:
 
@@ -55,19 +55,6 @@ Close the connection to the server and connect with `ecs`. Clone this repo:
 [source,bash]
 ----
 git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
-----
-
-
-== Temporary selfbuild
-
-For now we have no pipeline that builds the ecs. Instead build it locally:
-
-[source,bash]
-----
-git clone https://github.com/programmierfabrik/ecs
-cd ecs
-git checkout origin/feature/deployment-adjustments
-docker build -t ecs/ecs .
 ----
 
 == First time setup [[first_time_setup]]
@@ -398,4 +385,4 @@ mv ./decrypt/storage-vault ./data/ecs/storage-vault
 rm -rf ./decrypt/
 ----
 
-The System is now migrated and you can continue with the link:#first_time_setup[First time setup]!
+The System is now migrated!
