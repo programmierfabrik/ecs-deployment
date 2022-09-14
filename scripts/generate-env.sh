@@ -13,30 +13,22 @@ if [ -z "$1" ]; then
     usage
 fi
 
-generate_gpg() {
-    echo "$(docker run -e name=$1 -t --rm ubuntu:xenial \
-    bash -c 'gpg --quiet --no-default-keyring --enable-special-filenames --batch --yes --armor --gen-key 2>/dev/null << EOF
-Key-Type: 1
-Key-Length: 2048
-Expire-Date: 0
-Name-Real: $name
-%secring -&1
-%pubring -&2
-%commit
-EOF')"
-}
+if test -f "./.env"; then
+    echo ".env already exists..."
+    exit 1
+fi
 
 HOST=$1
 ECS_SECRET_KEY=$(openssl rand -base64 39)
 ECS_REGISTRATION_SECRET=$(openssl rand -base64 39)
 ECS_PASSWORD_RESET_SECRET=$(openssl rand -base64 39)
-ECS_VAULT_ENCRYPT=$(generate_gpg 'ecs_mediaserver')
-ECS_VAULT_SIGN=$(generate_gpg 'ecs_authority')
 
 cat << EOF > ./.env
 # ===== Basic Variables
+TAG=
 HOST=$HOST
 ECS_COMMISSION_UUID=ecececececececececececececececec
+ECS_REQUIRE_CLIENT_CERTS=true
 ECS_USERSWITCHER_ENABLED=false
 BACKUP_URI=file:///local-backup
 ACME_EMAIL=ecs.support@programmierfabrik.at
@@ -45,12 +37,12 @@ ECS_PROD=true
 ECS_DOMAIN=\${HOST}
 DATABASE_URL=postgres://ecs:ecs@database:5432/ecs
 REDIS_URL=redis://redis:6379/0
-MEMCACHED_URL=memcached://memcached:11211
+MEMCACHED_URL=memcached:11211
 SMTP_URL=smtp://mailserver:25
 # ===== Generated Variables
 ECS_SECRET_KEY=$ECS_SECRET_KEY
 ECS_REGISTRATION_SECRET=$ECS_REGISTRATION_SECRET
 ECS_PASSWORD_RESET_SECRET=$ECS_PASSWORD_RESET_SECRET
-ECS_VAULT_ENCRYPT="$ECS_VAULT_ENCRYPT"
-ECS_VAULT_SIGN="$ECS_VAULT_SIGN"
 EOF
+
+mkdir -p data/ecs volatile/ecs

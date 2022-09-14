@@ -15,7 +15,7 @@ fi
 
 me=`basename "$0"`
 
-public_key=$(sudo cat ./data/.ssh/id_rsa.pub)
+public_key=$(cat ./data/.ssh/id_rsa.pub)
 tmpfile=$(mktemp /tmp/${me}.XXXXXXXXXX)
 echo "$public_key" > $tmpfile
 
@@ -26,7 +26,7 @@ put ${tmpfile} .ssh/authorized_keys
 chmod 600 .ssh/authorized_keys
 EOF
 
-sudo ssh-keyscan $1.your-storagebox.de >> ./data/.ssh/known_hosts
-sudo chmod -R 600 ./data/.ssh/
+ssh-keyscan $1.your-storagebox.de >> ./data/.ssh/known_hosts
+chmod -R 600 ./data/.ssh/
 
 rm $tmpfile

@@ -2,7 +2,7 @@ FROM tomcat:8.5.15-jre8
 # to be used with an frontend ssl webserver, expects input is comming from https
 # run script expects a fullchain server ssl cert at /import/server.cert.pem
 
-ENV HOSTNAME localhost
+ENV HOSTNAME_PDFAS localhost
 ENV CATALINA_OPTS "-Xms350m -Xmx1024m -Dpdf-as-web.conf=/app/pdf-as-web/pdf-as-web.properties"
 
 RUN mkdir -p /app/pdf-as-web /app/import
@@ -20,7 +20,13 @@ RUN sed /usr/local/tomcat/conf/server.xml -r -i \
 
 COPY pdf-as-web.properties /app/pdf-as-web/pdf-as-web.properties.tmpl
 COPY pdfas-catalina.sh /app/pdf-as-web/pdfas-catalina.sh
-COPY isrgrootx1.pem /app/import/isrgrootx1.pem
 RUN  chmod +x /app/pdf-as-web/pdfas-catalina.sh
+
+# Disable expired let's encrypt certificates and download the new one
+# update-ca-certificates also updates the java keystore
+RUN sed -i -e 's|mozilla/DST_Root_CA_X3.crt|#mozilla/DST_Root_CA_X3.crt|g' /etc/ca-certificates.conf && \
+    sed -i -e 's|mozilla/ISRG_Root_X1.crt|#mozilla/ISRG_Root_X1.crt|g' /etc/ca-certificates.conf && \
+    wget --no-check-certificate https://letsencrypt.org/certs/isrgrootx1.pem -O /usr/local/share/ca-certificates/isrgrootx1.crt && \
+    /usr/sbin/update-ca-certificates --fresh
 
 CMD ["/app/pdf-as-web/pdfas-catalina.sh", "run"]
