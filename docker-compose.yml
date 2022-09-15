@@ -157,7 +157,6 @@ services:
   pdfas:
     build:
       context: pdfas
-    image: ecs/pdfas
     container_name: ecs_pdfas
     restart: always
     environment:
