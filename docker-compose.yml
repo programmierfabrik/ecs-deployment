@@ -22,7 +22,7 @@ services:
   ##############
 
   mailserver:
-    image: mailserver/docker-mailserver:11.1
+    image: ghcr.io/docker-mailserver/docker-mailserver:11.1
     container_name: ecs_mailserver
     restart: always
     environment:
@@ -50,7 +50,7 @@ services:
   #########################
 
   reverse-proxy:
-    image: traefik:v2.8.4
+    image: traefik:v2.8
     container_name: ecs_reverse-proxy
     restart: always
     volumes:
@@ -177,7 +177,7 @@ services:
   ##########
 
   backup:
-    image: ghcr.io/tecnativa/docker-duplicity-postgres:2.2.0
+    image: ghcr.io/tecnativa/docker-duplicity-postgres:v3.0.3
     container_name: ecs_backup
     restart: unless-stopped
     hostname: ecs.backup
