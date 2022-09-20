@@ -410,6 +410,6 @@ rm -rf ./decrypt/
 
 The System is now migrated!
 
-== Github actions [[github_actions]]
+== Github Actions [[github_actions]]
 
 TODO:
