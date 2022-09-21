@@ -13,6 +13,7 @@ jobs:
   update-servers:
     runs-on: ubuntu-latest
     steps:
-      - run: 'echo "Wien: $WIEN"'
+      - run: |
+          echo "Wien: $WIEN"
         env:
           TAGS: ${{ inputs.Wien }}
