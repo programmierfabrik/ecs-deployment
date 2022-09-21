@@ -18,7 +18,8 @@ jobs:
           - { value: 'appliancetest.programmierfabrik.eu', variable: 'appliancetest' }
           - { value: 'ecs.programmierfabrik.eu', variable: 'ecstest' }
     steps:
-      - run: |
+      - if: ${{ inputs[matrix.hosts.variable] }}
+        run: |
           echo "host: ${{ matrix.hosts.value }}"
           echo "variable: ${{ matrix.hosts.variable }}"
           echo "value: ${{ inputs[matrix.hosts.variable] }}"
