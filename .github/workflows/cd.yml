@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       appliancetest:
-        description: 'Appliance Test'
+        description: "Appliance Test"
         required: true
         default: true
         type: boolean
@@ -15,11 +15,14 @@ jobs:
     strategy:
       matrix:
         hosts:
-          - { value: 'appliancetest.programmierfabrik.eu', variable: 'appliancetest' }
-          - { value: 'ecs.programmierfabrik.eu', variable: 'ecstest' }
+          - { value: "appliancetest.programmierfabrik.eu", variable: "appliancetest" }
+          - { value: "ecs.programmierfabrik.eu", variable: "ecstest" }
     steps:
       - if: ${{ inputs[matrix.hosts.variable] }}
-        run: |
-          echo "host: ${{ matrix.hosts.value }}"
-          echo "variable: ${{ matrix.hosts.variable }}"
-          echo "value: ${{ inputs[matrix.hosts.variable] }}"
+        name: Executing update script via ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ matrix.hosts.value }}
+          username: github
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: whoami
