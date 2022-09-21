@@ -1,0 +1,20 @@
+name: Continuous Delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      Wien:
+        description: 'Wien test'
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  update-servers:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Wien: $WIEN"
+          echo "Environment: $ENVIRONMENT"
+        env:
+          TAGS: ${{ inputs.Wien }}
