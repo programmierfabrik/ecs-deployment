@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        hosts: [ { value: 'appliancetest.programmierfabrik.eu', variable: 'appliancetest' } ]
+        hosts:
+          - { value: 'appliancetest.programmierfabrik.eu', variable: 'appliancetest' }
+          - { value: 'ecs.programmierfabrik.eu', variable: 'ecstest' }
     steps:
       - run: |
           echo "host: ${{ matrix.hosts.value }}"
