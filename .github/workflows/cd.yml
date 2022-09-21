@@ -3,7 +3,7 @@ name: Continuous Delivery
 on:
   workflow_dispatch:
     inputs:
-      Wien:
+      appliancetest:
         description: 'Wien test'
         required: true
         default: true
@@ -12,6 +12,11 @@ on:
 jobs:
   update-servers:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+      hosts: [ { value: 'appliancetest.programmierfabrik.eu', variable: 'appliancetest' } ]
     steps:
       - run: |
-          echo "Wien: ${{ inputs.Wien }}"
+          echo "host: ${{ matrix.hosts.value }}"
+          echo "variable: ${{ matrix.hosts.variable }}"
+          echo "value: ${{ inputs[matrix.hosts.variable] }}"
