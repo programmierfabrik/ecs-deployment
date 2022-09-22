@@ -16,7 +16,6 @@ EOF
 
 IFS=' ' read -ra OPTIONS <<< "apt"
 for i in "${OPTIONS[@]}"; do
-    echo $i
     case $i in
     docker)
         UPDATE_IMAGES=true
@@ -55,7 +54,5 @@ if [[ $UPDATE_APT == 'true' ]]; then
     echo "Updated packages..."
 fi
 
-
-exit 0
 docker compose up -d > /dev/null 2>&1
 echo "Docker container up..."
