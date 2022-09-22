@@ -39,6 +39,7 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 # Navigate to the root of this project
 cd "$SCRIPT_PATH/.."
 
+echo "Stopping docker container..."
 docker compose down > /dev/null 2>&1
 echo "Docker container down..."
 
@@ -54,5 +55,6 @@ if [[ $UPDATE_APT == 'true' ]]; then
     echo "Updated packages..."
 fi
 
+echo "Starting docker container..."
 docker compose up -d > /dev/null 2>&1
 echo "Docker container up..."
