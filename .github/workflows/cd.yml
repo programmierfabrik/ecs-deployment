@@ -26,7 +26,6 @@ jobs:
       matrix:
         hosts:
           - { value: "appliancetest.programmierfabrik.eu", variable: "appliancetest" }
-          - { value: "ecs.programmierfabrik.eu", variable: "ecstest" }
     steps:
       - if: ${{ inputs[matrix.hosts.variable] }}
         name: Executing update script via ssh
