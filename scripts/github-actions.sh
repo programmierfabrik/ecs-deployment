@@ -2,22 +2,38 @@
 
 usage(){
     cat << EOF
-Usage: $0 true|false true|false
+Usage: $0 [option]
 
-First argument:  whether to pull new images or not
-Second argument: whether to update system packages or not
+Options:
+    --docker:   will update docker images
+    --apt:      will update apt packages
+    --all:      all of the above
 
 A script for github actions to restart / update the deployment.
 EOF
     exit 1
 }
 
-if [[ $# -ne 2 ]]; then
-    usage
-fi
-
-UPDATE_IMAGES=$1
-UPDATE_APT=$2
+IFS=' ' read -ra OPTIONS <<< "$SSH_ORIGINAL_COMMAND"
+for i in "${OPTIONS[@]}"; do
+    echo $i
+    case $i in
+    --docker)
+        UPDATE_IMAGES=true
+        ;;
+    --apt)
+        UPDATE_APT=true
+        ;;
+    --all)
+        UPDATE_IMAGES=true
+        UPDATE_APT=true
+        ;;
+    *)
+        echo "Unknown option \"$i\""
+        usage
+        ;;
+    esac
+done
 
 # Absolute path to this script
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
