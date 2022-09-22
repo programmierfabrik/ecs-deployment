@@ -44,7 +44,8 @@ echo "Docker container down..."
 
 if [[ $UPDATE_IMAGES == 'true' ]]; then
     echo "Updating images..."
-    docker compose pull
+    docker compose pull > /dev/null 2>&1
+    echo "Finished updating images..."
 fi
 
 if [[ $UPDATE_APT == 'true' ]]; then
