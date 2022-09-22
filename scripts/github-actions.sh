@@ -18,13 +18,13 @@ IFS=' ' read -ra OPTIONS <<< "$SSH_ORIGINAL_COMMAND"
 for i in "${OPTIONS[@]}"; do
     echo $i
     case $i in
-    --docker)
+    docker)
         UPDATE_IMAGES=true
         ;;
-    --apt)
+    apt)
         UPDATE_APT=true
         ;;
-    --all)
+    all)
         UPDATE_IMAGES=true
         UPDATE_APT=true
         ;;
