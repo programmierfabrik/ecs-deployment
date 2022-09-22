@@ -3,8 +3,18 @@ name: Continuous Delivery
 on:
   workflow_dispatch:
     inputs:
-      Wien:
-        description: 'Wien test'
+      docker:
+        description: "Pull Docker images"
+        required: true
+        default: true
+        type: boolean
+      apt:
+        description: "Update & Upgrade apt package"
+        required: true
+        default: true
+        type: boolean
+      appliancetest:
+        description: "Appliance Test"
         required: true
         default: true
         type: boolean
@@ -12,7 +22,16 @@ on:
 jobs:
   update-servers:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        hosts:
+          - { value: "appliancetest.programmierfabrik.eu", variable: "appliancetest" }
     steps:
-      - run: 'echo "Wien: $WIEN"'
-        env:
-          TAGS: ${{ inputs.Wien }}
+      - if: ${{ inputs[matrix.hosts.variable] }}
+        name: Executing update script via ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ matrix.hosts.value }}
+          username: github
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: ${{ inputs.docker && 'docker' || '' }} ${{ inputs.apt && 'apt' || '' }}
