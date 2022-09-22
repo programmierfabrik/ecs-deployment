@@ -14,8 +14,7 @@ EOF
     exit 1
 }
 
-IFS=' ' read -ra OPTIONS <<< "$SSH_ORIGINAL_COMMAND"
-for i in "${OPTIONS[@]}"; do
+for i in "$@"; do
     case $i in
     docker)
         UPDATE_IMAGES=true
