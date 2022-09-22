@@ -5,16 +5,16 @@ usage(){
 Usage: $0 [option]
 
 Options:
-    --docker:   will update docker images
-    --apt:      will update apt packages
-    --all:      all of the above
+    docker:   will update docker images
+    apt:      will update apt packages
+    all:      all of the above
 
 A script for github actions to restart / update the deployment.
 EOF
     exit 1
 }
 
-IFS=' ' read -ra OPTIONS <<< "$SSH_ORIGINAL_COMMAND"
+IFS=' ' read -ra OPTIONS <<< "apt"
 for i in "${OPTIONS[@]}"; do
     echo $i
     case $i in
@@ -40,7 +40,8 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 # Navigate to the root of this project
 cd "$SCRIPT_PATH/.."
 
-docker compose down
+docker compose down > /dev/null 2>&1
+echo "Docker container down..."
 
 if [[ $UPDATE_IMAGES == 'true' ]]; then
     echo "Updating images..."
@@ -49,7 +50,12 @@ fi
 
 if [[ $UPDATE_APT == 'true' ]]; then
     echo "Updating packages..."
-    sudo apt-get update -y && sudo apt-get upgrade -yy
+    sudo apt-get update -y > /dev/null 2>&1
+    sudo apt-get upgrade -yy > /dev/null 2>&1
+    echo "Updated packages..."
 fi
 
-docker compose up -d
+
+exit 0
+docker compose up -d > /dev/null 2>&1
+echo "Docker container up..."
