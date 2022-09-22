@@ -3,6 +3,16 @@ name: Continuous Delivery
 on:
   workflow_dispatch:
     inputs:
+      docker:
+        description: "Pull Docker images"
+        required: true
+        default: true
+        type: boolean
+      apt:
+        description: "Update & Upgrade apt package"
+        required: true
+        default: true
+        type: boolean
       appliancetest:
         description: "Appliance Test"
         required: true
@@ -25,4 +35,4 @@ jobs:
           host: ${{ matrix.hosts.value }}
           username: github
           key: ${{ secrets.PRIVATE_KEY }}
-          script: whoami
+          script: ${{ inputs.docker && 'docker' || '' }} ${{ inputs.apt && 'apt' || '' }}
