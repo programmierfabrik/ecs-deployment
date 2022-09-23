@@ -126,6 +126,10 @@ This will generate a `.env` file with the following variables:
 |false
 |whether the user switch is enable or disabled (This should only be `true` in a staging environment)
 
+|ECS_VOTE_RECEIVERS
+|BASG.EKVoten@ages.at
+|To which email the vote result of AMG and MPG studies will be sent
+
 |BACKUP_URI
 |file:///local-backup
 |The link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[Duplicity URI] where the backup files will be saved. There always be a `./backup` folder. If this variable is set to `file:///local-backup`, the backups will be saved to this folder. If you want to use `rsync` please refer to link:#rsync_setup[Rsync setup])
