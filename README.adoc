@@ -184,6 +184,9 @@ This will generate a `.env` file with the following variables:
 |ECS_PASSWORD_RESET_SECRET
 |`Django` specific secret key
 
+|BACKUP_PHASSPHRASE
+|Secret key for encrypting backup files
+
 |===
 
 === Docker network

@@ -22,6 +22,7 @@ HOST=$1
 ECS_SECRET_KEY=$(openssl rand -base64 39)
 ECS_REGISTRATION_SECRET=$(openssl rand -base64 39)
 ECS_PASSWORD_RESET_SECRET=$(openssl rand -base64 39)
+BACKUP_PHASSPHRASE=$(openssl rand -base64 39)
 
 cat << EOF > ./.env
 # ===== Basic Variables
@@ -44,6 +45,7 @@ SMTP_URL=smtp://mailserver:25
 ECS_SECRET_KEY=$ECS_SECRET_KEY
 ECS_REGISTRATION_SECRET=$ECS_REGISTRATION_SECRET
 ECS_PASSWORD_RESET_SECRET=$ECS_PASSWORD_RESET_SECRET
+BACKUP_PASSPHRASE=$BACKUP_PHASSPHRASE
 EOF
 
 mkdir -p data/ecs volatile/ecs

@@ -183,7 +183,8 @@ services:
     hostname: ecs.backup
     environment:
       CRONTAB_DAILY: 0 22 * * *
-      OPTIONS: --no-encryption --full-if-older-than=1W
+      OPTIONS: --full-if-older-than=1W
+      PASSPHRASE: ${BACKUP_PASSPHRASE}
       TZ: Europe/Vienna
       DST: ${BACKUP_URI}
       PGHOST: database
