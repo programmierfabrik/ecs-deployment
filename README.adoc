@@ -304,14 +304,14 @@ If your data is saved remotely copy it to the `./backup` folder. We will restore
 
 [source,bash]
 ----
-docker run --rm \
+. .env && docker run --rm \
   -v $PWD/restore:/mnt/backup/src \
   -v $PWD/backup:/backup \
-  -e TZ=Europe/Vienna -e OPTIONS=--no-encryption -e DST=file:///backup \
-  ghcr.io/tecnativa/docker-duplicity-docker:2.2.0 restore
+  -e TZ=Europe/Vienna -e DST=file:///backup -e PASSPHRASE=${BACKUP_PASSPHRASE} \
+  ghcr.io/tecnativa/docker-duplicity-postgres:v3.0.3 restore
 ----
 
-After that you can copy `./restore/storage-vault` to `./data/ecs/storage-vault` and apply the `sql`:
+After that you can move `./restore/storage-vault` to `./data/ecs/storage-vault` and apply the `sql`:
 
 [source,bash]
 ----
@@ -325,25 +325,7 @@ Simple cleanup:
 
 [source,bash]
 ----
-rm -rf backup/ restore/
-----
-
-=== Stop backup
-
-To stop the backup for some reason:
-
-[source,bash]
-----
-docker-compose stop backup
-----
-
-=== Start backup
-
-To start it again:
-
-[source,bash]
-----
-docker-compose start backup
+sudo rm -rf backup/ restore/
 ----
 
 == Scripts
