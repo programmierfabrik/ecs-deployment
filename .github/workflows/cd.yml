@@ -32,6 +32,6 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ matrix.hosts.value }}
-          username: github
+          username: ecs
           key: ${{ secrets.PRIVATE_KEY }}
           script: ${{ inputs.docker && 'docker' || '' }} ${{ inputs.apt && 'apt' || '' }}
