@@ -57,32 +57,12 @@ git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
 
 == Github Continuous Delivery
 
-If you want make use the github pipeline, you will need to setup an extra user:
+If you want make use the github pipeline, you will need to add the public key to the `authorized_keys`:
 
 [source,bash]
 ----
-# Create user with rbash (restricted bash)
-sudo useradd -m -s /bin/rbash github
-# Change default PATH so the user can only execute commands from /home/github/bin
-sudo -u github mkdir /home/github/bin
-sudo -u github mkdir /home/github/.ssh
-sudo -u github touch /home/github/.ssh/authorized_keys
-echo "PATH=/home/github/bin" | sudo tee -a /home/github/.profile
-echo "export PATH" | sudo tee -a /home/github/.profile
-# Be able to execute sudo as ecs but only for github-actions.sh.
-sudo ln -s /bin/sudo /home/github/bin/
-echo "github ALL=(ecs) NOPASSWD:/home/ecs/deployment/scripts/github-actions.sh" | sudo EDITOR="tee -a" visudo
+echo "command=\"/home/ecs/deployment/scripts/github-actions.sh \${SSH_ORIGINAL_COMMAND}\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADAgVPUZvANgT9H3yrJJderSno276LnnGl0F9qNCPLo ecs.support@programmierfabrik.at" | sudo tee -a /home/ecs/.ssh/authorized_keys
 ----
-
-NOTE: The reason why we execute github-actions.sh as the user `ecs` is because we need a few basic bash commands but also `docker` / `docker-compose`. And if the user has access to `docker`, no restrict will help as `docker` as executed as root and can override any files with volumes. This way we allow github only to execute our script as the user `ecs` and nothing else.
-
-Also add the public key to the `authorized_keys`:
-
-[source,bash]
-----
-echo "command=\"sudo -u ecs /home/ecs/deployment/scripts/github-actions.sh \${SSH_ORIGINAL_COMMAND}\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADAgVPUZvANgT9H3yrJJderSno276LnnGl0F9qNCPLo ecs.support@programmierfabrik.at" | sudo tee -a /home/github/.ssh/authorized_keys
-----
-
 
 Now you can use this machine with github actions. To add this machine, follow link:#github_actions[these instructions].
 
