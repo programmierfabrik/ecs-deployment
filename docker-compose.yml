@@ -41,7 +41,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     stop_grace_period: 1m
     healthcheck:
-      test: 'ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1'
+      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
       timeout: 3s
       retries: 0
 
