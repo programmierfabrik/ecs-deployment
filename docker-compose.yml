@@ -112,6 +112,8 @@ services:
     restart: always
     env_file:
       - .env
+    volumes:
+      - ./data/acme/live/${HOST}/:/opt/certs/
     labels:
       - 'traefik.tcp.routers.smtp-ssl.rule=HostSNI(`*`)'
       - 'traefik.tcp.routers.smtp-ssl.tls=false'
