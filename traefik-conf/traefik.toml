@@ -3,10 +3,8 @@
   address = ":80"
 [entryPoints.web-secure]
   address = ":443"
-[entryPoints.smtp]
-  address = ":25"
 [entryPoints.smtp-ssl]
-  address = ":465"
+  address = ":587"
 
 # Redirect 80 to 443
 [entryPoints.web.http.redirections.entryPoint]
