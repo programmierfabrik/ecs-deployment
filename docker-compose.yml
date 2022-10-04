@@ -62,7 +62,7 @@ services:
     ports:
       - '80:80'
       - '443:443'
-      - '587:587'
+      - '465:465'
     command:
       - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
 

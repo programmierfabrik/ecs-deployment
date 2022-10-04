@@ -4,7 +4,7 @@
 [entryPoints.web-secure]
   address = ":443"
 [entryPoints.smtp-ssl]
-  address = ":587"
+  address = ":465"
 
 # Redirect 80 to 443
 [entryPoints.web.http.redirections.entryPoint]
