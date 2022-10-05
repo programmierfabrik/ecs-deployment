@@ -112,15 +112,21 @@ services:
     restart: always
     env_file:
       - .env
-    volumes:
-      - ./data/acme/live/${HOST}/:/opt/certs/
+    environment:
+      PROXY: true
     labels:
+      - 'traefik.tcp.routers.smtp.rule=HostSNI(`*`)'
+      - 'traefik.tcp.routers.smtp.certResolver=mytlschallenge'
+      - 'traefik.tcp.routers.smtp.entrypoints=smtp'
+      - 'traefik.tcp.routers.smtp.service=smtp'
+      - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
+      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
       - 'traefik.tcp.routers.smtp-ssl.rule=HostSNI(`*`)'
-      - 'traefik.tcp.routers.smtp-ssl.tls=false'
+      - 'traefik.tcp.routers.smtp-ssl.certResolver=mytlschallenge'
       - 'traefik.tcp.routers.smtp-ssl.entrypoints=smtp-ssl'
       - 'traefik.tcp.routers.smtp-ssl.service=smtp-ssl'
       - 'traefik.tcp.services.smtp-ssl.loadbalancer.server.port=8025'
-      - 'traefik.tcp.services.smtp-ssl.loadbalancer.proxyProtocol.version=1'
+      - 'traefik.tcp.services.smtp-ssl.loadbalancer.proxyProtocol.version=2'
     command: ./manage.py smtpd -l info
     expose:
       - '8025'
