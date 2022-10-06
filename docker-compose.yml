@@ -114,6 +114,8 @@ services:
       - .env
     environment:
       PROXY: true
+    volumes:
+      - ./data/acme/live/${HOST}/:/opt/certs/
     labels:
       - 'traefik.tcp.routers.smtp-tls.rule=HostSNI(`*`)'
       - 'traefik.tcp.routers.smtp-tls.entrypoints=smtp-tls'
