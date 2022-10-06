@@ -3,6 +3,8 @@
   address = ":80"
 [entryPoints.web-secure]
   address = ":443"
+[entryPoints.smtp]
+  address = ":25"
 [entryPoints.smtp-tls]
   address = ":587"
 

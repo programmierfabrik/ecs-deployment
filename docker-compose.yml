@@ -60,6 +60,7 @@ services:
       - ./data/ecs/ca/:/etc/ecs-ca/:ro
       - ./data/acme:/etc/traefik/acme
     ports:
+      - '25:25'
       - '80:80'
       - '443:443'
       - '587:587'
@@ -117,6 +118,11 @@ services:
     volumes:
       - ./data/acme/live/${HOST}/:/opt/certs/
     labels:
+      - 'traefik.tcp.routers.smtp.rule=HostSNI(`*`)'
+      - 'traefik.tcp.routers.smtp.entrypoints=smtp'
+      - 'traefik.tcp.routers.smtp.service=smtp'
+      - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
+      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
       - 'traefik.tcp.routers.smtp-tls.rule=HostSNI(`*`)'
       - 'traefik.tcp.routers.smtp-tls.entrypoints=smtp-tls'
       - 'traefik.tcp.routers.smtp-tls.service=smtp-tls'
