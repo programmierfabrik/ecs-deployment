@@ -121,7 +121,7 @@ services:
       - 'traefik.tcp.routers.smtp.entrypoints=smtp'
       - 'traefik.tcp.routers.smtp.service=smtp'
       - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
-      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2''
+      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
     command: ./manage.py smtpd -l info
     expose:
       - '8025'
