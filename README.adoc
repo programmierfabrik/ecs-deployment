@@ -55,7 +55,7 @@ Close the connection to the server and connect with `ecs`. Clone this repo:
 git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
 ----
 
-== Github Continuous Delivery
+=== Github Continuous Delivery
 
 If you want make use the github pipeline, you will need to add the public key to the `authorized_keys`:
 
@@ -66,7 +66,9 @@ echo "command=\"/home/ecs/deployment/scripts/github-actions.sh \${SSH_ORIGINAL_C
 
 Now you can use this machine with github actions. To add this machine, follow link:#github_actions[these instructions].
 
-== SSH configuration
+=== SSH configuration
+
+We will increase the security over ssh with a few configuration:
 
 [source,bash]
 ----
@@ -78,6 +80,21 @@ Protocol 2
 PasswordAuthentication no
 EOF
 sudo service sshd restart 
+----
+
+=== Firewall
+
+Only allow traffic for the incoming ports the `ecs` uses:
+
+[source,bash]
+----
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow smtp
+sudo ufw enable
 ----
 
 == First time setup [[first_time_setup]]
