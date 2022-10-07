@@ -184,9 +184,11 @@ docker-compose up -d database memcached redis
 
 Now we start the main `ecs`. This will apply migrations on start and execute the bootstrap:
 
+IMPORTANT: Wait until the `migration` AND `bootstrap` is finished
+
 [source,bash]
 ----
-docker-compose up -d ecs.web
+docker-compose up -d ecs.web && docker-compose logs -f
 ----
 
 === Traefik reverse proxy
@@ -218,7 +220,6 @@ As this mailserver is not exposed to the internet and only used for sending mail
 docker-compose up -d mailserver
 . .env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
-echo 'mydestination = localhost.$mydomain, localhost' | sudo tee -a ./data/mailserver/config/postfix-main.cf
 ./scripts/setup.sh config dkim
 ----
 
