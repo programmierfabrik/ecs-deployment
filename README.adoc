@@ -219,7 +219,7 @@ docker-compose up -d database memcached redis
 
 Now we start the main `ecs`. This will apply migrations on start and execute the bootstrap:
 
-IMPORTANT: Wait until the `migration` AND `bootstrap` is finished
+IMPORTANT: Wait until the `migration` AND `bootstrap` are finished
 
 [source,bash]
 ----
