@@ -13,6 +13,11 @@ on:
         required: true
         default: true
         type: boolean
+      graz:
+        description: "Graz"
+        required: true
+        default: true
+        type: boolean
       appliancetest:
         description: "Appliance Test"
         required: true
@@ -26,6 +31,7 @@ jobs:
       matrix:
         hosts:
           - { value: "appliancetest.programmierfabrik.eu", variable: "appliancetest" }
+          - { value: "ecs2.medunigraz.at", variable: "graz" }
     steps:
       - if: ${{ inputs[matrix.hosts.variable] }}
         name: Executing update script via ssh
