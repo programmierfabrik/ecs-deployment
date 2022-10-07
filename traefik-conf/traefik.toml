@@ -5,8 +5,6 @@
   address = ":443"
 [entryPoints.smtp]
   address = ":25"
-[entryPoints.smtp-tls]
-  address = ":587"
 
 # Redirect 80 to 443
 [entryPoints.web.http.redirections.entryPoint]

@@ -63,7 +63,6 @@ services:
       - '25:25'
       - '80:80'
       - '443:443'
-      - '587:587'
     command:
       - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
 
@@ -122,12 +121,7 @@ services:
       - 'traefik.tcp.routers.smtp.entrypoints=smtp'
       - 'traefik.tcp.routers.smtp.service=smtp'
       - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
-      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
-      - 'traefik.tcp.routers.smtp-tls.rule=HostSNI(`*`)'
-      - 'traefik.tcp.routers.smtp-tls.entrypoints=smtp-tls'
-      - 'traefik.tcp.routers.smtp-tls.service=smtp-tls'
-      - 'traefik.tcp.services.smtp-tls.loadbalancer.server.port=8025'
-      - 'traefik.tcp.services.smtp-tls.loadbalancer.proxyProtocol.version=2'
+      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2''
     command: ./manage.py smtpd -l info
     expose:
       - '8025'
