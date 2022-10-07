@@ -20,7 +20,7 @@ if test "$gender" != "m" -a "$gender" != "f"; then
     usage
 fi
 
-cat << EOF | docker exec -i ecs_web /start run ./manage.py shell
+cat << EOF | docker exec -i ecs_web pipenv run ./manage.py shell
 
 email='$email'; first_name='$first'; last_name='$last'; gender='$gender'
 
