@@ -66,6 +66,20 @@ echo "command=\"/home/ecs/deployment/scripts/github-actions.sh \${SSH_ORIGINAL_C
 
 Now you can use this machine with github actions. To add this machine, follow link:#github_actions[these instructions].
 
+== SSH configuration
+
+[source,bash]
+----
+cat << EOF | sudo tee -a /etc/ssh/sshd_config.d/ecs.conf
+# https://wiki.centos.org/HowTos/Network/SecuringSSH
+PermitRootLogin no
+AllowUsers ecs
+Protocol 2 
+PasswordAuthentication no
+EOF
+sudo service sshd restart 
+----
+
 == First time setup [[first_time_setup]]
 
 IMPORTANT: This documentation assumes you are in the `/home/ecs/deployment`.
