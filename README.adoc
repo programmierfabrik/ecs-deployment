@@ -175,10 +175,6 @@ This will generate a `.env` file with the following variables:
 |redis://redis:6379/0
 |Redis URI for connecting to the `redis` container
 
-|MEMCACHED_URL
-|memcached:11211
-|Memcached URI for connecting to the `memcached` container
-
 |SMTP_URL
 |smtp://mailserver:25
 |Smtp URI for connecting to the `mailserver` container
@@ -206,13 +202,13 @@ This will generate a `.env` file with the following variables:
 
 === Docker network
 
-=== Postgres, Redis & Memecached databases
+=== Postgres & Redis
 
 Start the databases:
 
 [source,bash]
 ----
-docker-compose up -d database memcached redis
+docker-compose up -d database redis
 ----
 
 === ECS

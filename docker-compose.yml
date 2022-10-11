@@ -139,12 +139,6 @@ services:
       - ecs.web
       - redis
 
-  memcached:
-    image: memcached:1.6-alpine
-    container_name: ecs_memcached
-    restart: always
-    command: memcached -m 128m -I 5m
-
   redis:
     image: redis:7.0-alpine
     container_name: ecs_redis
