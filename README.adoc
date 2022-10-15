@@ -22,6 +22,8 @@ For machines with not a permanent `IP Address` the host will create a entry in `
 
 == Ubuntu Setup
 
+NOTE: This script assumes you are logged in with the user `root`
+
 Install Docker:
 
 [source,bash]
@@ -57,7 +59,7 @@ git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
 
 === Github Continuous Delivery
 
-If you want make use the github pipeline, you will need to add the public key to the `authorized_keys`:
+If you want make use of the github pipeline, you will need to add the public key to the `authorized_keys`:
 
 [source,bash]
 ----
