@@ -2,6 +2,7 @@ FROM tomcat:9.0-jre11
 
 ARG VERSION="4.2.0"
 ARG BASE_URL="https://apps.egiz.gv.at/releases/pdf-as/release/${VERSION}"
+ARG REVERSE_PROXY=0
 
 # Install
 RUN apt-get update -y && \
@@ -16,7 +17,8 @@ RUN curl -s -o ${CATALINA_HOME}/webapps/pdf-as-web.war              ${BASE_URL}/
     unzip -q /tmp/defaultConfig.zip -d                              ${CATALINA_HOME}/conf/pdf-as && rm /tmp/defaultConfig.zip
 
 # tell connector that our uplink is a https proxy and reconnects should go to https
-# RUN sed ${CATALINA_HOME}/conf/server.xml -r -i -e 's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
+RUN if [[ $REVERSE_PROXY -eq 1 ]] ; then sed ${CATALINA_HOME}/conf/server.xml -r -i -e \
+    's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
 
 COPY pdf-as-web.properties ${CATALINA_HOME}/conf/pdf-as/pdf-as-web.properties
 COPY setenv.sh ${CATALINA_HOME}/bin/
