@@ -162,7 +162,7 @@ services:
       - 'traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
       - 'traefik.http.routers.ecs-pdfas-secure.tls=true'
       - 'traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge'
-    mem_limit: 1144m
+    mem_limit: 1024m
 
   ##########
   # Backup #
