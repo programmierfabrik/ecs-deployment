@@ -18,7 +18,7 @@ RUN curl -s -o ${CATALINA_HOME}/webapps/pdf-as-web.war              ${BASE_URL}/
 
 # tell connector that our uplink is a https proxy and reconnects should go to https
 RUN if [[ $REVERSE_PROXY -eq 1 ]] ; then sed ${CATALINA_HOME}/conf/server.xml -r -i -e \
-    's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
+    's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/' ; fi
 
 COPY pdf-as-web.properties ${CATALINA_HOME}/conf/pdf-as/pdf-as-web.properties
 COPY setenv.sh ${CATALINA_HOME}/bin/
