@@ -1,32 +1,29 @@
-FROM tomcat:8.5.15-jre8
-# to be used with an frontend ssl webserver, expects input is comming from https
-# run script expects a fullchain server ssl cert at /import/server.cert.pem
+FROM tomcat:9.0-jre11
 
-ENV HOSTNAME_PDFAS localhost
-ENV CATALINA_OPTS "-Xms350m -Xmx1024m -Dpdf-as-web.conf=/app/pdf-as-web/pdf-as-web.properties"
+ARG VERSION="4.2.0"
+ARG BASE_URL="https://apps.egiz.gv.at/releases/pdf-as/release/${VERSION}"
 
-RUN mkdir -p /app/pdf-as-web /app/import
-RUN rm -rf $CATALINA_HOME/webapps/*
+# Install
+RUN apt-get update -y && \
+    apt-get install -y unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN curl -f -m 120 --insecure --connect-timeout 10 -s -S -o /usr/local/tomcat/webapps/pdf-as-web.war https://ecs-org.github.io/ecs-docs/pdf-as-web-4.1.0.war
-RUN echo "d625cd40a0baadf9ccf2a9bb46f6808efb7929e3fbe107b087b8c42f5b6c1971 */usr/local/tomcat/webapps/pdf-as-web.war" | sha256sum -c -
-RUN curl -f -m 120 --insecure --connect-timeout 10 -s -S -o /app/defaultConfig.zip https://ecs-org.github.io/ecs-docs/defaultConfig-4.1.1.zip
-RUN echo "392718b4b8e57582ec529061c25437b3858574a90214e429069cbc084333ca8d */app/defaultConfig.zip" | sha256sum -c -
-RUN unzip /app/defaultConfig.zip -d /app/pdf-as-web
+RUN mkdir ${CATALINA_HOME}/conf/pdf-as
+
+# Download pdf-as + its configuration & change the log level in configuration
+RUN curl -s -o ${CATALINA_HOME}/webapps/pdf-as-web.war              ${BASE_URL}/pdf-as-web-${VERSION}.war && \
+    curl -s -o /tmp/defaultConfig.zip                               ${BASE_URL}/cfg/defaultConfig.zip && \
+    curl -s -o ${CATALINA_HOME}/conf/pdf-as/pdf-as-web.properties   ${BASE_URL}/cfg/pdf-as-web.properties && \
+    unzip -q /tmp/defaultConfig.zip -d                              ${CATALINA_HOME}/conf/pdf-as && rm /tmp/defaultConfig.zip
 
 # tell connector that our uplink is a https proxy and reconnects should go to https
-RUN sed /usr/local/tomcat/conf/server.xml -r -i \
--e 's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
+# RUN sed ${CATALINA_HOME}/conf/server.xml -r -i -e 's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
 
-COPY pdf-as-web.properties /app/pdf-as-web/pdf-as-web.properties.tmpl
-COPY pdfas-catalina.sh /app/pdf-as-web/pdfas-catalina.sh
-RUN  chmod +x /app/pdf-as-web/pdfas-catalina.sh
+COPY setenv.sh ${CATALINA_HOME}/bin/
 
 # Disable expired let's encrypt certificates and download the new one
 # update-ca-certificates also updates the java keystore
-RUN sed -i -e 's|mozilla/DST_Root_CA_X3.crt|#mozilla/DST_Root_CA_X3.crt|g' /etc/ca-certificates.conf && \
-    sed -i -e 's|mozilla/ISRG_Root_X1.crt|#mozilla/ISRG_Root_X1.crt|g' /etc/ca-certificates.conf && \
-    wget --no-check-certificate https://letsencrypt.org/certs/isrgrootx1.pem -O /usr/local/share/ca-certificates/isrgrootx1.crt && \
-    /usr/sbin/update-ca-certificates --fresh
-
-CMD ["/app/pdf-as-web/pdfas-catalina.sh", "run"]
+# RUN sed -i -e 's|mozilla/DST_Root_CA_X3.crt|#mozilla/DST_Root_CA_X3.crt|g' /etc/ca-certificates.conf && \
+#     sed -i -e 's|mozilla/ISRG_Root_X1.crt|#mozilla/ISRG_Root_X1.crt|g' /etc/ca-certificates.conf && \
+#     wget --no-check-certificate https://letsencrypt.org/certs/isrgrootx1.pem -O /usr/local/share/ca-certificates/isrgrootx1.crt && \
+#     /usr/sbin/update-ca-certificates --fresh
