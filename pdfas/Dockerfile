@@ -13,12 +13,12 @@ RUN mkdir ${CATALINA_HOME}/conf/pdf-as
 # Download pdf-as + its configuration & change the log level in configuration
 RUN curl -s -o ${CATALINA_HOME}/webapps/pdf-as-web.war              ${BASE_URL}/pdf-as-web-${VERSION}.war && \
     curl -s -o /tmp/defaultConfig.zip                               ${BASE_URL}/cfg/defaultConfig.zip && \
-    curl -s -o ${CATALINA_HOME}/conf/pdf-as/pdf-as-web.properties   ${BASE_URL}/cfg/pdf-as-web.properties && \
     unzip -q /tmp/defaultConfig.zip -d                              ${CATALINA_HOME}/conf/pdf-as && rm /tmp/defaultConfig.zip
 
 # tell connector that our uplink is a https proxy and reconnects should go to https
 # RUN sed ${CATALINA_HOME}/conf/server.xml -r -i -e 's/(<Connector port="8080" protocol="HTTP\/1.1").*$/\1 secure="true" scheme="https" proxyPort="443"/'
 
+COPY pdf-as-web.properties ${CATALINA_HOME}/conf/pdf-as/pdf-as-web.properties
 COPY setenv.sh ${CATALINA_HOME}/bin/
 
 # Disable expired let's encrypt certificates and download the new one
