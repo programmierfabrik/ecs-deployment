@@ -151,8 +151,6 @@ services:
       context: pdfas
     container_name: ecs_pdfas
     restart: always
-    environment:
-      CATALINA_OPTS: "-Dpublic.url=https://${HOST}/pdf-as-web"
     volumes:
       - './data/acme:/app/import/acme:ro'
     labels:
