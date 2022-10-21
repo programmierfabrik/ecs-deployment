@@ -147,12 +147,11 @@ services:
       - ./volatile/redis:/data
 
   pdfas:
-    build:
-      context: pdfas
+    image: ghcr.io/programmierfabrik/pdf-as-web:4.2.0
     container_name: ecs_pdfas
     restart: always
-    volumes:
-      - './data/acme:/app/import/acme:ro'
+    environment:
+      HOST: $HOST
     labels:
       - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
       - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
