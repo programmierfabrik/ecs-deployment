@@ -25,12 +25,17 @@ else
     usage
 fi
 
-# Create .gpg folder and import the keys
-mkdir ./decrypt/.gpg
-gpg --homedir ./decrypt/.gpg --import ./decrypt/{vault_encrypt,vault_sign}
+if [[ ! -d ./decrypt/.gnupg ]]; then
+    # Create .gpg folder and import the keys
+    mkdir ./decrypt/.gnupg
+    gpg --homedir ./decrypt/.gnupg --import ./decrypt/{vault_encrypt,vault_sign}
+    find ./decrypt/.gnupg -type f -exec chmod 600 {} \;
+    find ./decrypt/.gnupg -type d -exec chmod 700 {} \;
+fi
+
 
 # Decrypt all files and save them as .tmp
-find ./decrypt/storage-vault -type f -exec gpg --homedir ./decrypt/.gpg --yes --always-trust --output '{}.tmp' --decrypt '{}' \;
+find ./decrypt/storage-vault -type f -exec gpg --homedir ./decrypt/.gnupg --yes --always-trust --output '{}.tmp' --decrypt '{}' \;
 
 # Now move (and override) the encrypted files with the decryptes files -> "xxx.tmp" to "xxx"
 find ./decrypt/storage-vault -name "*.tmp" -type f -exec sh -c 'tmp_path="{}"; new_path="${tmp_path%%.tmp}"; mv -f "{}" "$new_path"' \;
