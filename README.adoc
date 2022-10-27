@@ -16,8 +16,6 @@ Please add these records to your domain name (replace `<ip>` & `<domain>` with t
 _dmarc  IN  TXT "v=DMARC1; p=quarantine"
 ----
 
-Also don't forget to set the reverse lookup. Almost all mail services rejects emails if no PTR record is found.
-
 For machines with not a permanent `IP Address` the host will create a entry in `/etc/hosts` with `127.0.1.1 hostname.domain hostname`. This will lead to issues as the docker network uses the name resolver of the host. This leads to the container resolving the hostname of the hostmachine to 127.0.1.1 instead of the ip of the machine. Change the `127.0.1.1` to the `IP Address` of the server.
 
 == Ubuntu Setup
