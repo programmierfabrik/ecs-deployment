@@ -396,7 +396,9 @@ Create the directory `decrypt` and create the files `vault_encrypt` and `vault_s
 [source,bash]
 ----
 mkdir decrypt
-touch vault_encrypt vault_sign
+touch decrypt/vault_{encrypt,sign}
+# nano decrypt/vault_encrypt
+# nano decrypt/vault_sign
 rsync -r root@old.machine:/data/ecs-storage-vault/ ./decrypt/storage-vault
 ----
 
