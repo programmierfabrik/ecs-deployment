@@ -360,6 +360,11 @@ To create a certificate for a admin user:
 ./scripts/create-client-certificate.sh email@example.com name_of_cert 365
 ----
 
+[source,bash]
+----
+docker exec -it ecs_database psql -U ecs -d ecs
+----
+
 == Migrations
 
 === ecs-deployment to ecs-deployment
