@@ -30,7 +30,7 @@ mkdir ./decrypt/.gpg
 gpg --homedir ./decrypt/.gpg --import ./decrypt/{vault_encrypt,vault_sign}
 
 # Decrypt all files and save them as .tmp
-find ./decrypt/storage_vault -type f -exec gpg --homedir ./decrypt/.gpg --yes --always-trust --output '{}.tmp' --decrypt '{}' \;
+find ./decrypt/storage-vault -type f -exec gpg --homedir ./decrypt/.gpg --yes --always-trust --output '{}.tmp' --decrypt '{}' \;
 
 # Now move (and override) the encrypted files with the decryptes files -> "xxx.tmp" to "xxx"
-find ./decrypt/storage_vault -name "*.tmp" -type f -exec sh -c 'tmp_path="{}"; new_path="${tmp_path%%.tmp}"; mv -f "{}" "$new_path"' \;
+find ./decrypt/storage-vault -name "*.tmp" -type f -exec sh -c 'tmp_path="{}"; new_path="${tmp_path%%.tmp}"; mv -f "{}" "$new_path"' \;
