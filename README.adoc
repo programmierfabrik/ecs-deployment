@@ -392,6 +392,7 @@ Start only the databases and apply the dump from the old machine:
 cat ecs.pgdump.gz | gzip -d | \
   docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
   bash -c "pg_restore -1 -O -F c -n public -d ecs"
+rm ecs.pgdump.gz
 ----
 
 Create the directory `decrypt` and create the files `vault_encrypt` and `vault_sign` (see `env.yml`). Also copy the `storage-vault` to this folder:
@@ -412,18 +413,25 @@ Now you can start the decrypt process:
 ./scripts/decrypt-storage-vault.sh
 ----
 
-Continue with the link:#first_time_setup[First time setup]
+Continue with the link:#first_time_setup[first time setup].
 
-When you are done, all the directories should be now generated and we can migrate the `storage-vault`.
+After you started ecs.web, all the necessary directories should be generated and we can migrate the `storage-vault`.
 Move the `storage-vault` to its proper location and delete all files that were needed for the decryption:
 
 [source,bash]
 ----
-mv ./decrypt/storage-vault ./data/ecs/storage-vault
+mv ./decrypt/storage-vault/* ./data/ecs/storage-vault
 rm -rf ./decrypt/
 ----
 
-The System is now migrated!
+You can also copy the old ca files for the client certificates:
+
+[source,bash]
+----
+rsync root@old.machine:/app/ecs-ca/* ./data/ecs/ca
+----
+
+The System is now migrated and you can finish the link:#first_time_setup[first time setup]!
 
 == Github Actions [[github_actions]]
 
