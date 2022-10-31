@@ -138,7 +138,19 @@ services:
     depends_on:
       - ecs.web
       - redis
-  
+
+  ecs.help:
+    image: ghcr.io/programmierfabrik/ecs-docs:old
+    container_name: ecs_docs
+    restart: always
+    labels:
+      - 'traefik.http.routers.ecs-docs.entryPoints=web'
+      - 'traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)'
+      - 'traefik.http.routers.ecs-docs-secure.entryPoints=web-secure'
+      - 'traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)'
+      - 'traefik.http.routers.ecs-docs-secure.tls=true'
+      - 'traefik.http.routers.ecs-docs-secure.tls.certResolver=mytlschallenge'
+
   redis:
     image: redis:7.0-alpine
     container_name: ecs_redis
