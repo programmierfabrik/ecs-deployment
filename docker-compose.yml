@@ -140,7 +140,7 @@ services:
       - redis
 
   ecs.help:
-    image: ghcr.io/programmierfabrik/ecs-docs:old
+    image: ghcr.io/programmierfabrik/ecs-docs:latest
     container_name: ecs_docs
     restart: always
     labels:
