@@ -139,7 +139,7 @@ services:
       - ecs.web
       - redis
 
-  ecs.help:
+  ecs.docs:
     image: ghcr.io/programmierfabrik/ecs-docs:latest
     container_name: ecs_docs
     restart: always
