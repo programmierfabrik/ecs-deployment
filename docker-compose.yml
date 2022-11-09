@@ -101,7 +101,7 @@ services:
     volumes:
       - ./data/ecs:/opt/ecs/data
       - ./volatile/ecs:/opt/ecs/volatile
-    command: celery -A ecs worker -l warn
+    command: celery -A ecs worker -l warning
     depends_on:
       - ecs.web
       - redis
@@ -122,7 +122,7 @@ services:
       - 'traefik.tcp.routers.smtp.service=smtp'
       - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
       - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
-    command: ./manage.py smtpd -l warn
+    command: ./manage.py smtpd -l warning
     expose:
       - '8025'
     depends_on:
@@ -134,7 +134,7 @@ services:
     restart: always
     env_file:
       - .env
-    command: celery -A ecs beat -l warn
+    command: celery -A ecs beat -l warning
     depends_on:
       - ecs.web
       - redis
