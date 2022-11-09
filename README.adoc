@@ -130,12 +130,16 @@ This will generate a `.env` file with the following variables:
 
 |ECS_REQUIRE_CLIENT_CERTS
 |true
-|whether the admin users need a certificate or not (This should only be `false` in a staging / test environment)
+|Whether the admin users need a certificate or not (This should only be `false` in a staging / test environment)
 
 
 |ECS_USERSWITCHER_ENABLED
 |false
-|whether the user switch is enable or disabled (This should only be `true` in a staging environment)
+|Whether the user switch is enable or disabled (This should only be `true` in a staging environment)
+
+|ECS_EMAIL_ENABLED
+|true
+|Enable the email traffic via smtp. If false the emails will be printed to the console
 
 |ECS_VOTE_RECEIVERS
 |BASG.EKVoten@ages.at
