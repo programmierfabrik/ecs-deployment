@@ -141,6 +141,10 @@ This will generate a `.env` file with the following variables:
 |true
 |Enable the email traffic via smtp. If false the emails will be printed to the console
 
+|ECS_DISABLE_REGISTER
+|false
+|If true, disable the registratrion of new users. This way only the invite works and the scripts
+
 |ECS_VOTE_RECEIVERS
 |BASG.EKVoten@ages.at
 |To which email the vote result of AMG and MPG studies will be sent
