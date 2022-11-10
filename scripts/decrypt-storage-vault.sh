@@ -6,7 +6,7 @@ usage(){
 Usage:  $0
 
 The following gpg files must exist: ./decrypt/vault_encrypt, ./decrypt/vault_sign
-The storage_vault must exist: ./decrypt/storage_vault
+The storage-vault must exist: ./decrypt/storage-vault
 EOF
     exit 1
 }
@@ -18,9 +18,9 @@ else
     usage
 fi
 
-# Check if storage_vault exists
+# Check if storage-vault exists
 if [[ -d "./decrypt/storage-vault" ]]; then
-    echo "storage_vault exist..."
+    echo "storage-vault exist..."
 else
     usage
 fi
@@ -33,9 +33,7 @@ if [[ ! -d ./decrypt/.gnupg ]]; then
     find ./decrypt/.gnupg -type d -exec chmod 700 {} \;
 fi
 
-
-# Decrypt all files and save them as .tmp
-find ./decrypt/storage-vault -type f -exec gpg --homedir ./decrypt/.gnupg --yes --always-trust --output '{}.tmp' --decrypt '{}' \;
-
-# Now move (and override) the encrypted files with the decryptes files -> "xxx.tmp" to "xxx"
-find ./decrypt/storage-vault -name "*.tmp" -type f -exec sh -c 'tmp_path="{}"; new_path="${tmp_path%%.tmp}"; mv -f "{}" "$new_path"' \;
+echo "File count before decryption: $(find ./decrypt/storage-vault -type f | wc -l)" >> ./decrypt/log
+# Decrypt all files and save them as .tmp. After the decryption, override the encrypted file with the decrypted one
+find ./decrypt/storage-vault -type f -exec gpg --homedir ./decrypt/.gnupg --yes --quiet --always-trust --output '{}.tmp' --decrypt '{}' \; -exec sh -c 'tmp_path="{}.tmp"; new_path="${tmp_path%%.tmp}"; mv -f "{}.tmp" "$new_path"' \;
+echo "File count after decryption: $(find ./decrypt/storage-vault -type f | wc -l)" >> ./decrypt/log
