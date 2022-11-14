@@ -16,6 +16,7 @@ services:
       - POSTGRES_DATABASE=ecs
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
+    shm_size: 256m
 
   ##############
   # Mailserver #
