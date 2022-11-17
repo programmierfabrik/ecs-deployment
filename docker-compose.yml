@@ -7,7 +7,7 @@ services:
   #####################
 
   database:
-    image: postgres:14.5-alpine
+    image: postgres:11-alpine
     container_name: ecs_database
     restart: always
     environment:
