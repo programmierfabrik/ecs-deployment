@@ -375,7 +375,8 @@ docker exec -it ecs_database psql -U ecs -d ecs
 
 === ecs-deployment to ecs-deployment
 
-Just copy the `.env` and the `./data` folder to the new machine where the `ecs-deployment` is located and start `docker-compose`.
+You can either copy the `./data` folder and keep everything as is or you copy everything from `./data/ecs` and apply the migration.
+Either way you will need `.env` from the old machine.
 
 === ecs-appliance to ecs-deployment
 
