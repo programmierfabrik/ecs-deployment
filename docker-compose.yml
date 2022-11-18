@@ -7,7 +7,7 @@ services:
   #####################
 
   database:
-    image: postgres:11-alpine
+    image: postgres:15-alpine
     container_name: ecs_database
     restart: always
     environment:
@@ -16,7 +16,8 @@ services:
       - POSTGRES_DATABASE=ecs
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-    shm_size: 256m
+    command: postgres -c jit=off
+    shm_size: 1024m
 
   ##############
   # Mailserver #
