@@ -336,7 +336,7 @@ After that you can move `./restore/storage-vault` to `./data/ecs/storage-vault` 
 [source,bash]
 ----
 cat ./restore/dump/ecs.pgdump.gz | gzip -d | \
-  docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
+  docker exec -i ecs_database \
   bash -c "pg_restore -1 -O -F c -n public -d ecs"
 mv ./restore/storage-vault/* ./data/ecs/storage-vault/
 ----
