@@ -180,26 +180,25 @@ services:
   ##########
 
   backup:
-    image: ghcr.io/tecnativa/docker-duplicity-postgres:v3.0.3
+    image: ghcr.io/tecnativa/docker-duplicity-docker:v3.0.3
     container_name: ecs_backup
     restart: unless-stopped
     hostname: ecs.backup
+    privileged: true
     environment:
       CRONTAB_DAILY: 0 22 * * *
       OPTIONS: --full-if-older-than=1W
       PASSPHRASE: ${BACKUP_PASSPHRASE}
       TZ: Europe/Vienna
       DST: ${BACKUP_URI}
-      PGHOST: database
-      PGPASSWORD: ecs
-      PGUSER: ecs
-      JOB_100_WHAT: pg_dump -Fc -Z0 | gzip > $${SRC}/dump/ecs.pgdump.gz
+      JOB_100_WHAT: docker exec ecs_database pg_dump -U ecs -Fc -Z0 | gzip > $${SRC}/dump/ecs.pgdump.gz
       JOB_100_WHEN: daily
       JOB_200_WHAT: backup
       JOB_200_WHEN: daily
       JOB_300_WHAT: dup remove-all-but-n-full 4 --force $$DST
       JOB_300_WHEN: daily
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/ecs/storage-vault:/mnt/backup/src/storage-vault:ro
       - ./data/ecs/dump:/mnt/backup/src/dump
       - ./backup:/local-backup
