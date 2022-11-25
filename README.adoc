@@ -328,7 +328,7 @@ If your data is saved remotely copy it to the `./backup` folder. We will restore
   -v $PWD/restore:/mnt/backup/src \
   -v $PWD/backup:/backup \
   -e TZ=Europe/Vienna -e DST=file:///backup -e PASSPHRASE=${BACKUP_PASSPHRASE} \
-  ghcr.io/tecnativa/docker-duplicity-postgres:v3.0.3 restore
+  ghcr.io/tecnativa/docker-duplicity-docker:v3.0.3 restore
 ----
 
 After that you can move `./restore/storage-vault` to `./data/ecs/storage-vault` and apply the `sql`:
@@ -399,8 +399,8 @@ Start only the databases and apply the dump from the old machine:
 [source,bash]
 ----
 cat ecs.pgdump.gz | gzip -d | \
-  docker exec -e PGPASSWORD=ecs -e PGUSER=ecs -i ecs_database \
-  bash -c "pg_restore -1 -O -F c -n public -d ecs"
+  docker exec -i ecs_database \
+  bash -c "pg_restore -U ecs -1 -O -F c -n public -d ecs"
 rm ecs.pgdump.gz
 ----
 
