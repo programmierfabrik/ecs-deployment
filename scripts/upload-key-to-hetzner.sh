@@ -19,7 +19,7 @@ public_key=$(cat ./data/.ssh/id_rsa.pub)
 tmpfile=$(mktemp /tmp/${me}.XXXXXXXXXX)
 echo "$public_key" > $tmpfile
 
-sftp $1@$1.your-storagebox.de <<EOF 
+sftp $1@$1.your-storagebox.de <<EOF
 mkdir .ssh
 chmod 700 .ssh
 put ${tmpfile} .ssh/authorized_keys
@@ -27,6 +27,5 @@ chmod 600 .ssh/authorized_keys
 EOF
 
 ssh-keyscan $1.your-storagebox.de >> ./data/.ssh/known_hosts
-chmod -R 600 ./data/.ssh/
 
 rm $tmpfile

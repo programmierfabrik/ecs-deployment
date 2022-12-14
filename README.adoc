@@ -289,7 +289,7 @@ Almost all of the link:http://duplicity.nongnu.org/vers8/duplicity.1.html#sect7[
 [source,bash]
 ----
 mkdir ./data/.ssh
-chmod 700 ./data/.ssh
+chmod 775 ./data/.ssh
 ssh-keygen -b 4096 -t rsa -f ./data/.ssh/id_rsa -q -N ""
 ----
 
