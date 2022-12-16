@@ -35,6 +35,7 @@ ECS_EMAIL_ENABLED=true
 ECS_DISABLE_REGISTER=false
 ECS_VOTE_RECEIVERS=BASG.EKVoten@ages.at
 ECS_SENTRY_DSN=
+ECS_LOG_LEVEL=WARNING
 BACKUP_URI=file:///local-backup
 ACME_EMAIL=ecs.support@programmierfabrik.at
 # ===== Hardcoded Production Variables

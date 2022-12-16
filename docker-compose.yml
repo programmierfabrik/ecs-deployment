@@ -89,7 +89,7 @@ services:
       - 'traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file'
       - 'traefik.http.routers.ecs-web-secure.tls=true'
       - 'traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge'
-    command: daphne -b 0.0.0.0 ecs.asgi:application
+    command: daphne -b 0.0.0.0 --proxy-headers ecs.asgi:application
     depends_on:
       - database
       - redis
