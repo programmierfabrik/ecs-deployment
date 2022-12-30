@@ -55,17 +55,6 @@ Close the connection to the server and connect with `ecs`. Clone this repo:
 git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
 ----
 
-=== Github Continuous Delivery
-
-If you want make use of the github pipeline, you will need to add the public key to the `authorized_keys`:
-
-[source,bash]
-----
-echo "command=\"/home/ecs/deployment/scripts/github-actions.sh \${SSH_ORIGINAL_COMMAND}\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADAgVPUZvANgT9H3yrJJderSno276LnnGl0F9qNCPLo ecs.support@programmierfabrik.at" | sudo tee -a /home/ecs/.ssh/authorized_keys
-----
-
-Now you can use this machine with github actions. To add this machine, follow link:#github_actions[these instructions].
-
 === SSH configuration
 
 We will increase the security over ssh with a few configuration:
@@ -451,7 +440,3 @@ rsync root@old.machine:/app/ecs-ca/* ./data/ecs/ca
 ----
 
 The System is now migrated and you can finish the link:#first_time_setup[first time setup]!
-
-== Github Actions [[github_actions]]
-
-To add a new machine, edit the `.github/workflows/cd.yml` file. Add a new boolean input under `on.workflow_dispatch.inputs` For a better documentation, see the https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs[github docs].
