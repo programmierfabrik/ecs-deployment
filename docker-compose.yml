@@ -26,14 +26,13 @@ services:
   mailserver:
     image: ghcr.io/docker-mailserver/docker-mailserver:11.1
     container_name: ecs_mailserver
+    hostname: mail.${HOST}
     restart: always
     environment:
       - LOG_LEVEL=warn
       - PERMIT_DOCKER=host
-      - ENABLE_AMAVIS=0
       - SMTP_ONLY=1
       - SSL_TYPE=letsencrypt
-      - OVERRIDE_HOSTNAME=${HOST}
     volumes:
       - ./data/mailserver/mail-data/:/var/mail/
       - ./data/mailserver/mail-state/:/var/mail-state/
