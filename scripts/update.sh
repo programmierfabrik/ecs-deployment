@@ -25,7 +25,7 @@ for i in "$@"; do
 done
 
 run_command() {
-    if [[ $HIDE_OUTPUT == "true" ]]
+    if [[ $HIDE_OUTPUT != "true" ]]
     then $@
     else $@ 2>&1 > /dev/null
     fi
