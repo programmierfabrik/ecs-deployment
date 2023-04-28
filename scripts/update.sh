@@ -27,7 +27,7 @@ done
 run_command() {
     if [[ $HIDE_OUTPUT != "true" ]]
     then $@
-    else $@ 2>&1 > /dev/null
+    else $@ >/dev/null 2>&1
     fi
 }
 
@@ -48,4 +48,4 @@ run_command "sudo apt-get upgrade -yy"
 echo -e "Updated packages...\n"
 
 echo "Rebooting..."
-reboot
+sudo reboot
