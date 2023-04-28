@@ -47,5 +47,5 @@ run_command "sudo apt-get update -y"
 run_command "sudo apt-get upgrade -yy"
 echo -e "Updated packages...\n"
 
-echo "Rebooting..."
-sudo reboot
+run_command "docker compose up -d"
+echo -e "Docker container up...\n"
