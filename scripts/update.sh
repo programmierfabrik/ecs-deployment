@@ -36,6 +36,8 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 # Navigate to the root of this project
 cd "$SCRIPT_PATH/.."
 
+DEBIAN_FRONTEND=noninteractive
+
 run_command "docker compose down"
 echo -e "Docker container down...\n"
 
