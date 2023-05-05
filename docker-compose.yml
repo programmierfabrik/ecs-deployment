@@ -202,6 +202,7 @@ services:
       - ./data/ecs/dump:/mnt/backup/src/dump
       - ./backup:/local-backup
       - ./data/.ssh/:/root/.ssh
+      - ./volatile/backup:/root
     depends_on:
       - database
 
