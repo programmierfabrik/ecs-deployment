@@ -36,8 +36,6 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 # Navigate to the root of this project
 cd "$SCRIPT_PATH/.."
 
-DEBIAN_FRONTEND=noninteractive
-
 run_command "docker compose down"
 echo -e "Docker container down...\n"
 
@@ -45,8 +43,8 @@ run_command "docker compose pull"
 echo -e "Finished updating images...\n"
 
 echo "Updating packages..."
-run_command "sudo apt-get update -y"
-run_command "sudo apt-get upgrade -yy"
+run_command "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y"
+run_command "sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yy"
 echo -e "Updated packages...\n"
 
 run_command "docker compose up -d"
