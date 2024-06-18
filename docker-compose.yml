@@ -23,7 +23,6 @@ x-ecs-default: &ecs-default
     - ./volatile/ecs:/opt/ecs/volatile
 
 services:
-
   #####################
   # Postgres Database #
   #####################
@@ -33,13 +32,18 @@ services:
     container_name: ecs_database
     restart: always
     environment:
-      - POSTGRES_USER=ecs
-      - POSTGRES_PASSWORD=ecs
-      - POSTGRES_DATABASE=ecs
+      POSTGRES_USER: ecs
+      POSTGRES_PASSWORD: ecs
+      POSTGRES_DATABASE: ecs
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     command: postgres -c jit=off
     shm_size: 1024m
+
+  database-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: postgresql://ecs:ecs@database:5432/ecs?sslmode=disable
 
   ##############
   # Mailserver #
@@ -83,9 +87,9 @@ services:
       - ./data/ecs/ca/:/etc/ecs-ca/:ro
       - ./data/acme:/etc/traefik/acme
     ports:
-      - '25:25'
-      - '80:80'
-      - '443:443'
+      - "25:25"
+      - "80:80"
+      - "443:443"
     command:
       - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
 
@@ -97,13 +101,13 @@ services:
     <<: *ecs-default
     container_name: ecs_web
     labels:
-      - 'traefik.http.routers.ecs-web.entryPoints=web'
-      - 'traefik.http.routers.ecs-web.rule=Host(`${HOST}`)'
-      - 'traefik.http.routers.ecs-web-secure.entryPoints=web-secure'
-      - 'traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)'
-      - 'traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file'
-      - 'traefik.http.routers.ecs-web-secure.tls=true'
-      - 'traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge'
+      - "traefik.http.routers.ecs-web.entryPoints=web"
+      - "traefik.http.routers.ecs-web.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.ecs-web-secure.entryPoints=web-secure"
+      - "traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file"
+      - "traefik.http.routers.ecs-web-secure.tls=true"
+      - "traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge"
     command: daphne -b 0.0.0.0 --proxy-headers ecs.asgi:application
     depends_on:
       - database
@@ -125,14 +129,14 @@ services:
     volumes:
       - ./data/acme/live/${HOST}/:/opt/certs/
     labels:
-      - 'traefik.tcp.routers.smtp.rule=HostSNI(`*`)'
-      - 'traefik.tcp.routers.smtp.entrypoints=smtp'
-      - 'traefik.tcp.routers.smtp.service=smtp'
-      - 'traefik.tcp.services.smtp.loadbalancer.server.port=8025'
-      - 'traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2'
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.smtp.entrypoints=smtp"
+      - "traefik.tcp.routers.smtp.service=smtp"
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=8025"
+      - "traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2"
     command: ./manage.py smtpd -l warning
     expose:
-      - '8025'
+      - "8025"
     depends_on:
       - ecs.web
 
@@ -149,12 +153,12 @@ services:
     container_name: ecs_docs
     restart: always
     labels:
-      - 'traefik.http.routers.ecs-docs.entryPoints=web'
-      - 'traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)'
-      - 'traefik.http.routers.ecs-docs-secure.entryPoints=web-secure'
-      - 'traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)'
-      - 'traefik.http.routers.ecs-docs-secure.tls=true'
-      - 'traefik.http.routers.ecs-docs-secure.tls.certResolver=mytlschallenge'
+      - "traefik.http.routers.ecs-docs.entryPoints=web"
+      - "traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)"
+      - "traefik.http.routers.ecs-docs-secure.entryPoints=web-secure"
+      - "traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)"
+      - "traefik.http.routers.ecs-docs-secure.tls=true"
+      - "traefik.http.routers.ecs-docs-secure.tls.certResolver=mytlschallenge"
 
   redis:
     image: redis:7.0-alpine
@@ -163,6 +167,11 @@ services:
     volumes:
       - ./volatile/redis:/data
 
+  redis-exporter:
+    image: oliver006/redis_exporter
+    environment:
+      REDIS_ADDR: redis://redis:6379
+
   pdfas:
     image: ghcr.io/programmierfabrik/pdf-as-web:4.2.0
     container_name: ecs_pdfas
@@ -170,12 +179,12 @@ services:
     environment:
       HOST: $HOST
     labels:
-      - 'traefik.http.routers.ecs-pdfas.entryPoints=web'
-      - 'traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
-      - 'traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure'
-      - 'traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)'
-      - 'traefik.http.routers.ecs-pdfas-secure.tls=true'
-      - 'traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge'
+      - "traefik.http.routers.ecs-pdfas.entryPoints=web"
+      - "traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)"
+      - "traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure"
+      - "traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)"
+      - "traefik.http.routers.ecs-pdfas-secure.tls=true"
+      - "traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge"
     mem_limit: 1024m
 
   ##########
@@ -209,6 +218,30 @@ services:
       - ./volatile/backup:/root
     depends_on:
       - database
+
+  ##############
+  # Monitoring #
+  ##############
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
 
 networks:
   default:
