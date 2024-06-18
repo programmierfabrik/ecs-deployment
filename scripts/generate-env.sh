@@ -40,7 +40,6 @@ BACKUP_URI=file:///local-backup
 ACME_EMAIL=ecs.support@programmierfabrik.at
 # ===== Hardcoded Production Variables
 ECS_PROD=true
-ECS_DOMAIN=\${HOST}
 DATABASE_URL=postgres://ecs:ecs@database:5432/ecs
 REDIS_URL=redis://redis:6379/0
 SMTP_URL=smtp://mailserver:25

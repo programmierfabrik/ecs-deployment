@@ -1,4 +1,26 @@
-version: '3'
+x-ecs-default: &ecs-default
+  image: ghcr.io/programmierfabrik/ecs:${TAG:?}
+  restart: always
+  environment:
+    ECS_PROD: true
+    DATABASE_URL: postgres://ecs:ecs@database:5432/ecs
+    REDIS_URL: redis://redis:6379/0
+    SMTP_URL: smtp://mailserver:25
+    ECS_COMMISSION_UUID: ${ECS_COMMISSION_UUID}
+    ECS_REQUIRE_CLIENT_CERTS: ${ECS_REQUIRE_CLIENT_CERTS}
+    ECS_USERSWITCHER_ENABLED: ${ECS_USERSWITCHER_ENABLED}
+    ECS_EMAIL_ENABLED: ${ECS_EMAIL_ENABLED}
+    ECS_DISABLE_REGISTER: ${ECS_DISABLE_REGISTER}
+    ECS_VOTE_RECEIVERS: ${ECS_VOTE_RECEIVERS}
+    ECS_SENTRY_DSN: ${ECS_SENTRY_DSN}
+    ECS_LOG_LEVEL: ${ECS_LOG_LEVEL}
+    ECS_DOMAIN: ${HOST}
+    ECS_SECRET_KEY: ${ECS_SECRET_KEY}
+    ECS_REGISTRATION_SECRET: ${ECS_REGISTRATION_SECRET}
+    ECS_PASSWORD_RESET_SECRET: ${ECS_PASSWORD_RESET_SECRET}
+  volumes:
+    - ./data/ecs:/opt/ecs/data
+    - ./volatile/ecs:/opt/ecs/volatile
 
 services:
 
@@ -72,14 +94,8 @@ services:
   #######
 
   ecs.web:
-    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
+    <<: *ecs-default
     container_name: ecs_web
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - ./data/ecs:/opt/ecs/data
-      - ./volatile/ecs:/opt/ecs/volatile
     labels:
       - 'traefik.http.routers.ecs-web.entryPoints=web'
       - 'traefik.http.routers.ecs-web.rule=Host(`${HOST}`)'
@@ -94,25 +110,16 @@ services:
       - redis
 
   ecs.worker:
-    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
+    <<: *ecs-default
     container_name: ecs_worker
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - ./data/ecs:/opt/ecs/data
-      - ./volatile/ecs:/opt/ecs/volatile
     command: celery -A ecs worker -l warning
     depends_on:
       - ecs.web
       - redis
 
   ecs.smtpd:
-    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
+    <<: *ecs-default
     container_name: ecs_smtpd
-    restart: always
-    env_file:
-      - .env
     environment:
       PROXY: true
     volumes:
@@ -130,11 +137,8 @@ services:
       - ecs.web
 
   ecs.beat:
-    image: ghcr.io/programmierfabrik/ecs:${TAG:?}
+    <<: *ecs-default
     container_name: ecs_beat
-    restart: always
-    env_file:
-      - .env
     command: celery -A ecs beat -l warning
     depends_on:
       - ecs.web
