@@ -63,7 +63,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     stop_grace_period: 1m
     healthcheck:
-      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
+      test: ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1
       timeout: 3s
       retries: 0
 
@@ -83,8 +83,8 @@ services:
       - ./data/acme:/etc/traefik/acme
     ports:
       - "25:25"
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443"
     command:
       - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
 
@@ -96,13 +96,12 @@ services:
     <<: *ecs-default
     container_name: ecs_web
     labels:
-      - "traefik.http.routers.ecs-web.entryPoints=web"
-      - "traefik.http.routers.ecs-web.rule=Host(`${HOST}`)"
-      - "traefik.http.routers.ecs-web-secure.entryPoints=web-secure"
-      - "traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)"
-      - "traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file"
-      - "traefik.http.routers.ecs-web-secure.tls=true"
-      - "traefik.http.routers.ecs-web-secure.tls.certResolver=mytlschallenge"
+      - traefik.enable=true
+      - traefik.http.routers.ecs-web.entryPoints=web
+      - traefik.http.routers.ecs-web.rule=Host(`${HOST}`)
+      - traefik.http.routers.ecs-web-secure.entryPoints=web-secure
+      - traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)
+      - traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file
     command: daphne -b 0.0.0.0 --proxy-headers ecs.asgi:application
     depends_on:
       - database
@@ -124,14 +123,14 @@ services:
     volumes:
       - ./data/acme/live/${HOST}/:/opt/certs/
     labels:
-      - "traefik.tcp.routers.smtp.rule=HostSNI(`*`)"
-      - "traefik.tcp.routers.smtp.entrypoints=smtp"
-      - "traefik.tcp.routers.smtp.service=smtp"
-      - "traefik.tcp.services.smtp.loadbalancer.server.port=8025"
-      - "traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2"
+      - traefik.tcp.routers.smtp.rule=HostSNI(`*`)
+      - traefik.tcp.routers.smtp.entrypoints=smtp
+      - traefik.tcp.routers.smtp.service=smtp
+      - traefik.tcp.services.smtp.loadbalancer.server.port=8025
+      - traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2
     command: ./manage.py smtpd -l warning
     expose:
-      - "8025"
+      - 8025
     depends_on:
       - ecs.web
 
@@ -148,12 +147,10 @@ services:
     container_name: ecs_docs
     restart: always
     labels:
-      - "traefik.http.routers.ecs-docs.entryPoints=web"
-      - "traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)"
-      - "traefik.http.routers.ecs-docs-secure.entryPoints=web-secure"
-      - "traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)"
-      - "traefik.http.routers.ecs-docs-secure.tls=true"
-      - "traefik.http.routers.ecs-docs-secure.tls.certResolver=mytlschallenge"
+      - traefik.http.routers.ecs-docs.entryPoints=web
+      - traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)
+      - traefik.http.routers.ecs-docs-secure.entryPoints=web-secure
+      - traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)
 
   redis:
     image: redis:7.0-alpine
@@ -169,12 +166,10 @@ services:
     environment:
       HOST: $HOST
     labels:
-      - "traefik.http.routers.ecs-pdfas.entryPoints=web"
-      - "traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)"
-      - "traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure"
-      - "traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)"
-      - "traefik.http.routers.ecs-pdfas-secure.tls=true"
-      - "traefik.http.routers.ecs-pdfas-secure.tls.certResolver=mytlschallenge"
+      - traefik.http.routers.ecs-pdfas.entryPoints=web
+      - traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)
+      - traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure
+      - traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)
     mem_limit: 1024m
 
   ##########
