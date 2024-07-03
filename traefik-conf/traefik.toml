@@ -1,3 +1,8 @@
+[global]
+  sendAnonymousUsage = false
+[providers.docker]
+  exposedByDefault = false
+
 # Entry points
 [entryPoints.web]
   address = ":80"
@@ -12,12 +17,7 @@
   permanent = true
   scheme = "https"
 
-[global]
-  sendAnonymousUsage = false
-
-[providers.docker]
-
-[certificatesResolvers.mytlschallenge.acme]
+[certificatesResolvers.le-resolver.acme]
   storage = '/etc/traefik/acme/acme.json'
   tlsChallenge = true
 
