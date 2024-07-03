@@ -84,6 +84,9 @@ sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
 sudo ufw allow smtp
+sudo ufw allow 9100
+sudo ufw allow 9121
+sudo ufw allow 9187
 sudo ufw enable
 ----
 

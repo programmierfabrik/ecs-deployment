@@ -38,6 +38,7 @@ ECS_SENTRY_DSN=
 ECS_LOG_LEVEL=WARNING
 BACKUP_URI=file:///local-backup
 ACME_EMAIL=ecs.support@programmierfabrik.at
+EXPORTER_AUTH_USER=
 # ===== Hardcoded Production Variables
 ECS_PROD=true
 DATABASE_URL=postgres://ecs:ecs@database:5432/ecs

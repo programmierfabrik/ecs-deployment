@@ -1,18 +1,36 @@
 services:
-  database-exporter:
+  postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    restart: always
     environment:
       DATA_SOURCE_NAME: postgresql://ecs:ecs@database:5432/ecs?sslmode=disable
+    labels:
+      # Declare middleware here and use it for all the services
+      - traefik.http.middlewares.exporter-auth.basicauth.users=$EXPORTER_AUTH_USER
+      - traefik.enable=true
+      - traefik.http.routers.postgres-exporter.entryPoints=postgres-exporter
+      - traefik.http.routers.postgres-exporter.rule=Host(`${HOST}`)
+      - traefik.http.routers.postgres-exporter.middlewares=exporter-auth@docker
+      - traefik.http.routers.postgres-exporter.tls.certResolver=le-resolver
 
   redis-exporter:
     image: oliver006/redis_exporter
+    container_name: redis-exporter
+    restart: always
     environment:
       REDIS_ADDR: redis://redis:6379
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.redis-exporter.entryPoints=redis-exporter
+      - traefik.http.routers.redis-exporter.rule=Host(`${HOST}`)
+      - traefik.http.routers.redis-exporter.middlewares=exporter-auth@docker
+      - traefik.http.routers.redis-exporter.tls.certResolver=le-resolver
 
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    restart: unless-stopped
+    restart: always
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -22,7 +40,14 @@ services:
       - --path.rootfs=/rootfs
       - --path.sysfs=/host/sys
       - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.node-exporter.entryPoints=node-exporter
+      - traefik.http.routers.node-exporter.rule=Host(`${HOST}`)
+      - traefik.http.routers.node-exporter.middlewares=exporter-auth@docker
+      - traefik.http.routers.node-exporter.tls.certResolver=le-resolver
 
 networks:
   default:
     name: ecs-reverse-proxy
+    external: true

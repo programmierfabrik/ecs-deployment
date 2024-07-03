@@ -4,12 +4,20 @@
   exposedByDefault = false
 
 # Entry points
+[entryPoints.smtp]
+  address = ":25"
 [entryPoints.web]
   address = ":80"
 [entryPoints.web-secure]
   address = ":443"
-[entryPoints.smtp]
-  address = ":25"
+  [entryPoints.web-secure.http.tls]
+    certResolver = "le-resolver"
+[entryPoints.node-exporter]
+  address = ":9100"
+[entryPoints.redis-exporter]
+  address = ":9121"
+[entryPoints.postgres-exporter]
+  address = ":9187"
 
 # Redirect 80 to 443
 [entryPoints.web.http.redirections.entryPoint]
