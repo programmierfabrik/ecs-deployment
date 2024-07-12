@@ -47,6 +47,25 @@ services:
       - traefik.http.routers.node-exporter.middlewares=exporter-auth@docker
       - traefik.http.routers.node-exporter.tls.certResolver=le-resolver
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    container_name: cadvisor
+    volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:ro
+        - /sys:/sys:ro
+        - /var/lib/docker/:/var/lib/docker:ro
+        - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+        - /dev/kmsg
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.cadvisor.entryPoints=cadvisor
+      - traefik.http.routers.cadvisor.rule=Host(`${HOST}`) && Path(`/metrics`)
+      - traefik.http.routers.cadvisor.middlewares=exporter-auth@docker
+      - traefik.http.routers.cadvisor.tls.certResolver=le-resolver
+
 networks:
   default:
     name: ecs-reverse-proxy

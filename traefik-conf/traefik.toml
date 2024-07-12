@@ -18,6 +18,8 @@
   address = ":9121"
 [entryPoints.postgres-exporter]
   address = ":9187"
+[entryPoints.cadvisor]
+  address = ":9188"
 
 # Redirect 80 to 443
 [entryPoints.web.http.redirections.entryPoint]
