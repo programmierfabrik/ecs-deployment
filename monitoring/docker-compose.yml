@@ -8,6 +8,7 @@ services:
     labels:
       # Declare middleware here and use it for all the services
       - traefik.http.middlewares.exporter-auth.basicauth.users=$EXPORTER_AUTH_USER
+      - traefik.http.middlewares.exporter-auth.ipallowlist.sourcerange=$EXPORTER_PROMETHEUS_IP/32
       - traefik.enable=true
       - traefik.http.routers.postgres-exporter.entryPoints=postgres-exporter
       - traefik.http.routers.postgres-exporter.rule=Host(`${HOST}`)
