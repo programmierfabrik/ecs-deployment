@@ -7,12 +7,12 @@ services:
       DATA_SOURCE_NAME: postgresql://ecs:ecs@database:5432/ecs?sslmode=disable
     labels:
       # Declare middleware here and use it for all the services
-      - traefik.http.middlewares.exporter-auth.basicauth.users=$EXPORTER_AUTH_USER
       - traefik.http.middlewares.exporter-ip.ipallowlist.sourcerange=$EXPORTER_PROMETHEUS_IP/32
+      - traefik.http.middlewares.exporter-auth.basicauth.users=$EXPORTER_AUTH_USER
       - traefik.enable=true
       - traefik.http.routers.postgres-exporter.entryPoints=postgres-exporter
       - traefik.http.routers.postgres-exporter.rule=Host(`${HOST}`)
-      - traefik.http.routers.postgres-exporter.middlewares=exporter-auth@docker,exporter-ip@docker
+      - traefik.http.routers.postgres-exporter.middlewares=exporter-ip@docker, exporter-auth@docker
       - traefik.http.routers.postgres-exporter.tls.certResolver=le-resolver
 
   redis-exporter:
@@ -25,7 +25,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.redis-exporter.entryPoints=redis-exporter
       - traefik.http.routers.redis-exporter.rule=Host(`${HOST}`)
-      - traefik.http.routers.redis-exporter.middlewares=exporter-auth@docker,exporter-ip@docker
+      - traefik.http.routers.redis-exporter.middlewares=exporter-ip@docker, exporter-auth@docker
       - traefik.http.routers.redis-exporter.tls.certResolver=le-resolver
 
   node-exporter:
@@ -45,7 +45,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.node-exporter.entryPoints=node-exporter
       - traefik.http.routers.node-exporter.rule=Host(`${HOST}`)
-      - traefik.http.routers.node-exporter.middlewares=exporter-auth@docker,exporter-ip@docker
+      - traefik.http.routers.node-exporter.middlewares=exporter-ip@docker, exporter-auth@docker
       - traefik.http.routers.node-exporter.tls.certResolver=le-resolver
 
   cadvisor:
@@ -64,7 +64,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.cadvisor.entryPoints=cadvisor
       - traefik.http.routers.cadvisor.rule=Host(`${HOST}`) && Path(`/metrics`)
-      - traefik.http.routers.cadvisor.middlewares=exporter-auth@docker,exporter-ip@docker
+      - traefik.http.routers.cadvisor.middlewares=exporter-ip@docker, exporter-auth@docker
       - traefik.http.routers.cadvisor.tls.certResolver=le-resolver
 
 networks:
