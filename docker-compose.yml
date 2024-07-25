@@ -72,7 +72,7 @@ services:
   #########################
 
   reverse-proxy:
-    image: traefik:v2.8
+    image: traefik:v3.0
     container_name: ecs_reverse-proxy
     restart: always
     volumes:
