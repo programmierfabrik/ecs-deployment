@@ -78,15 +78,15 @@ Only allow traffic for the incoming ports the `ecs` uses:
 
 [source,bash]
 ----
+# Set default policies
 sudo ufw default allow outgoing
 sudo ufw default deny incoming
+# Allow necessary services
 sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
 sudo ufw allow smtp
-sudo ufw allow 9100
-sudo ufw allow 9121
-sudo ufw allow 9187
+# Enable UFW
 sudo ufw enable
 ----
 
