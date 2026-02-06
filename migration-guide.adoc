@@ -1,0 +1,245 @@
+= Migration Guide
+:toc:
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+:host_old: <old-server>
+:host_new: <new-server>
+
+This guide migrates the ECS deployment from an old production server to a new server with minimal downtime.
+The most time-consuming step is copying the storage vault, so we pre-copy it before the migration window.
+
+== Pre Migration Steps
+
+These steps can be done shortly before the migration without shutting down the ECS.
+Goal: pre-copy large data so downtime is only for the final DB dump + final rsync.
+
+=== 1. Prepare the new server
+
+Follow the <<README.adoc#_ubuntu_setup,Ubuntu Setup>> on the new server first.
+
+On the new server, ensure the base folders exist:
+
+[source,bash]
+----
+mkdir -p ~/deployment/volatile/ecs
+mkdir -p ~/deployment/data/ecs/storage-vault
+mkdir -p ~/deployment/data/ecs/dump
+----
+
+=== 2. SSH access for rsync
+
+On the new server, generate a dedicated SSH key (no passphrase) for pulling from the old server:
+
+[source,bash]
+----
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+----
+
+On the old server, add this public key to the authorized keys of the user you will rsync from:
+
+[source,bash]
+----
+nano ~/.ssh/authorized_keys
+----
+
+Paste the printed public key as a new line, save, and exit.
+
+=== 3. Copy environment configuration
+
+On the old server, read the current env file:
+
+[source,bash]
+----
+cat ~/deployment/.env
+----
+
+On the new server, create the same file:
+
+[source,bash]
+----
+nano ~/deployment/.env
+----
+
+Paste the content and save.
+
+=== 4. Copy required config folders (excluding the big vault)
+
+We copy essential config and secrets first, but not the storage vault yet.
+
+On the old server, create a tar with the required folders:
+
+[source,bash]
+----
+cd ~/deployment
+sudo tar -cpf /tmp/deployment-data.tar \
+  -C ~/deployment/data \
+  .ssh \
+  mailserver \
+  acme \
+  ecs/ca
+----
+
+Copy it to the new server:
+
+[source,bash]
+----
+scp {host_old}:/tmp/deployment-data.tar /tmp/deployment-data.tar
+----
+
+On the new server, extract it while preserving folder structure:
+
+[source,bash]
+----
+tar -xpf /tmp/deployment-data.tar -C ~/deployment/data
+----
+
+=== 5. Pre-copy the storage vault (long-running)
+
+Do this from the new server.
+
+Start a tmux session so rsync keeps running:
+
+[source,bash]
+----
+tmux new -s rsync-docs
+----
+
+Detach (leave it running):
+
+* `Ctrl+b` then `d`
+
+Reattach later:
+
+[source,bash]
+----
+tmux attach -t rsync-docs
+----
+
+Run the pre-copy rsync from the new server:
+
+[source,bash]
+----
+rsync -aHAX --numeric-ids --info=progress2 \
+  --omit-dir-times --no-inc-recursive \
+  --partial --partial-dir=.rsync-partial \
+  --whole-file \
+  -e "ssh -T -c aes128-gcm@openssh.com -o Compression=no" \
+  {host_old}:~/deployment/data/ecs/storage-vault/  ~/deployment/data/ecs/storage-vault/
+----
+
+Notes:
+- Trailing slashes matter: we copy the *contents* of storage-vault into the local storage-vault folder.
+- `--numeric-ids` avoids UID/GID mapping issues.
+- `--partial` helps with interruptions.
+
+== Migration Day Steps (Downtime Window)
+
+Downtime starts when we stop the old ECS and ends when the new ECS is up and verified.
+
+=== 1. Stop services on the old server and create DB dump
+
+On the old server:
+
+[source,bash]
+----
+cd ~/deployment
+
+# Stop everything
+docker compose down
+
+# Start only the database
+docker compose up -d database
+----
+
+Create a fresh dump:
+
+[source,bash]
+----
+mkdir -p ~/deployment/data/ecs/dump
+docker exec ecs_database pg_dump -U ecs -Fc -Z0 ecs | gzip > ~/deployment/data/ecs/dump/ecs.pgdump.gz
+----
+
+Stop the database too:
+
+[source,bash]
+----
+docker compose down
+----
+
+=== 2. Copy volatile runtime data + DB dump to the new server
+
+On the old server, tar the volatile directory:
+
+[source,bash]
+----
+sudo tar -cpf /tmp/volatile.tar -C ~/deployment/volatile ./ecs ./redis
+----
+
+Copy both artifacts to the new server:
+
+[source,bash]
+----
+scp {host_old}:/tmp/volatile.tar /tmp/volatile.tar
+scp {host_old}:~/deployment/data/ecs/dump/ecs.pgdump.gz ~/
+----
+
+On the new server, extract volatile while preserving structure:
+
+[source,bash]
+----
+tar -xpf /tmp/volatile.tar -C ~/deployment/volatile
+----
+
+=== 3. Restore the DB on the new server
+
+On the new server:
+
+[source,bash]
+----
+cd ~/deployment
+
+# Start only the database
+docker compose up -d database
+----
+
+Restore the dump into the new DB:
+
+[source,bash]
+----
+cat ~/ecs.pgdump.gz | gzip -d | \
+  docker exec -i ecs_database \
+  bash -c "pg_restore -U ecs -1 -O -F c -n public -d ecs"
+----
+
+=== 4. Final-sync the storage vault (short)
+
+On the new server, run the final rsync (same command as pre-copy).
+This should be quick because only the delta changed during downtime window:
+
+[source,bash]
+----
+rsync -aHAX --numeric-ids --info=progress2 \
+  --omit-dir-times --no-inc-recursive \
+  --partial --partial-dir=.rsync-partial \
+  --whole-file \
+  -e "ssh -T -c aes128-gcm@openssh.com -o Compression=no" \
+  {host_old}:~/deployment/data/ecs/storage-vault/  ~/deployment/data/ecs/storage-vault/
+----
+
+=== 5. Compare file count and total file size
+
+On both servers, compare the sum of all file sizes (bytes):
+
+[source,bash]
+----
+echo `find ~/deployment/data/ecs/storage-vault -type f -ls | awk '{print $7 "+"}'`0 | bc
+----
+
+And compare the number of files:
+
+[source,bash]
+----
+find ~/deployment/data/ecs/storage-vault -type f -print | wc -l
+----
