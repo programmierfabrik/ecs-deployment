@@ -5,7 +5,7 @@
 
 == Requirements
 
-To run this deployment all you need is `docker` and `docker-compose` and the correct `DNS` entries.
+To run this deployment all you need is `docker` and the correct `DNS` entries.
 Please add these records to your domain name (replace `<ip>` & `<domain>` with the ip and domain name of the machine):
 
 [source,txt]
@@ -39,12 +39,11 @@ echo 'ecs ALL=(ALL) NOPASSWD:ALL' | EDITOR='tee -a' visudo
 usermod -aG docker ecs
 -----
 
-Create a `alias` for `docker-compose` and write your `ssh-keys`:
+Write your `ssh-keys`:
 
 [source,bash]
 ----
 su - ecs
-echo "alias docker-compose='docker compose'" >> ~/.bashrc
 mkdir .ssh
 nano .ssh/authorized_keys
 ----
@@ -58,37 +57,8 @@ git clone https://github.com/programmierfabrik/ecs-deployment.git ~/deployment
 
 === SSH configuration
 
-We will increase the security over ssh with a few configuration:
+See this https://infosec.mozilla.org/guidelines/openssh[Mozilla Guide] for `ssh` configuration and create `/etc/ssh/sshd_config.d/99-hardening.conf`. Be carefeul, the sftp link is not correct in the guide for `Ubuntu-24.04`.
 
-[source,bash]
-----
-cat << EOF | sudo tee -a /etc/ssh/sshd_config.d/ecs.conf
-# https://wiki.centos.org/HowTos/Network/SecuringSSH
-PermitRootLogin no
-AllowUsers ecs
-Protocol 2 
-PasswordAuthentication no
-EOF
-sudo service sshd restart 
-----
-
-=== Firewall
-
-Only allow traffic for the incoming ports the `ecs` uses:
-
-[source,bash]
-----
-# Set default policies
-sudo ufw default allow outgoing
-sudo ufw default deny incoming
-# Allow necessary services
-sudo ufw allow ssh
-sudo ufw allow http
-sudo ufw allow https
-sudo ufw allow smtp
-# Enable UFW
-sudo ufw enable
-----
 
 == First time setup [[first_time_setup]]
 
@@ -159,33 +129,6 @@ This will generate a `.env` file with the following variables:
 |Let's encrypt will send an email to this person when the certificate is about to expire and when the certificate is refreshed
 |===
 
-.Hardcoded Production Variables
-[cols="1,1,1"]
-|===
-|Variable Name |Value |Description
-
-|ECS_PROD
-|true
-|`Django` sets all the necessary settings for a production environment when `ECS_PROD` is true.
-
-|ECS_DOMAIN
-|${HOST}
-|Resolves to the `HOST` variable. `Django` needs a `DOMAIN` variable for the `ALLOWED_HOSTS`.
-
-|DATABASE_URL
-|postgres://ecs:ecs@database:5432/ecs
-|Postgres URI for connecting to the `database` container
-
-|REDIS_URL
-|redis://redis:6379/0
-|Redis URI for connecting to the `redis` container
-
-|SMTP_URL
-|smtp://mailserver:25
-|Smtp URI for connecting to the `mailserver` container
-
-|===
-
 .Generated Variables
 [cols="1,1"]
 |===
@@ -213,7 +156,7 @@ Start the databases:
 
 [source,bash]
 ----
-docker-compose up -d database redis
+docker compose up -d database redis
 ----
 
 === ECS
@@ -224,7 +167,7 @@ IMPORTANT: Wait until the `migration` AND `bootstrap` are finished
 
 [source,bash]
 ----
-docker-compose up -d ecs.web && docker-compose logs -f
+docker compose up -d ecs.web && docker compose logs -f
 ----
 
 === Traefik reverse proxy
@@ -233,7 +176,7 @@ No container is connected to the outside world. With the reverse proxy all the n
 
 [source,bash]
 ----
-docker-compose up -d reverse-proxy
+docker compose up -d reverse-proxy
 ----
 
 Now go to your web-browser and open `https://<domain>` so the https certificate is fetched by traefik.
@@ -253,7 +196,7 @@ As this mailserver is not exposed to the internet and only used for sending mail
 
 [source,bash]
 ----
-docker-compose up -d mailserver
+docker compose up -d mailserver
 . .env && docker exec -e HOST=${HOST} -it ecs_mailserver \
   /bin/bash -c 'echo "test@$HOST|$(doveadm pw -s SHA512-CRYPT -u test@$HOST -p password)" >> /tmp/docker-mailserver/postfix-accounts.cf'
 ./scripts/setup.sh config dkim
@@ -274,7 +217,7 @@ Start the remaining containers:
 
 [source,bash]
 ----
-docker-compose up -d
+docker compose up -d
 ----
 
 == Backup
