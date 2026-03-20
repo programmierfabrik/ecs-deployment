@@ -184,7 +184,7 @@ services:
   ##########
 
   backup:
-    image: ghcr.io/tecnativa/docker-duplicity-docker:v3.0.3
+    image: ghcr.io/tecnativa/docker-duplicity-docker:v4.1.0
     container_name: ecs_backup
     restart: unless-stopped
     hostname: ecs.backup
