@@ -89,8 +89,27 @@ services:
       - 9121:9121
       - 9187:9187
       - 9188:9188
+    labels:
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiKey=${CROWDSEC_BOUNCER_KEY}"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecLapiHost=crowdsec:8080"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecAppsecEnabled=true"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecAppsecHost=crowdsec:7422"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecAppsecFailureBlock=true"
+      - "traefik.http.middlewares.crowdsec.plugin.bouncer.crowdsecAppsecUnreachableBlock=true"
     command:
       - --certificatesResolvers.mytlschallenge.acme.email=${ACME_EMAIL}
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    restart: unless-stopped
+    environment:
+      COLLECTIONS: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+    volumes:
+      - ./crowdsec/config:/etc/crowdsec
+      - ./crowdsec/data:/var/lib/crowdsec/data
+      - ./crowdsec/appsec.yaml:/etc/crowdsec/acquis.d/appsec.yaml
 
   #######
   # ECS #
@@ -105,7 +124,7 @@ services:
       - traefik.http.routers.ecs-web.rule=Host(`${HOST}`)
       - traefik.http.routers.ecs-web-secure.entryPoints=web-secure
       - traefik.http.routers.ecs-web-secure.rule=Host(`${HOST}`)
-      - traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file
+      - traefik.http.routers.ecs-web-secure.middlewares=passtlsclientcert@file,crowdsec@docker
     command: daphne -b 0.0.0.0 --proxy-headers ecs.asgi:application
     depends_on:
       - database
@@ -157,6 +176,7 @@ services:
       - traefik.http.routers.ecs-docs.rule=Host(`${HOST}`) && PathPrefix(`/help`)
       - traefik.http.routers.ecs-docs-secure.entryPoints=web-secure
       - traefik.http.routers.ecs-docs-secure.rule=Host(`${HOST}`) && PathPrefix(`/help`)
+      - traefik.http.routers.ecs-docs-secure.middlewares=crowdsec@docker
 
   redis:
     image: redis:7.0-alpine
@@ -177,6 +197,7 @@ services:
       - traefik.http.routers.ecs-pdfas.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)
       - traefik.http.routers.ecs-pdfas-secure.entryPoints=web-secure
       - traefik.http.routers.ecs-pdfas-secure.rule=Host(`${HOST}`) && PathPrefix(`/pdf-as-web`)
+      - traefik.http.routers.ecs-pdfas-secure.middlewares=crowdsec@docker
     mem_limit: 1024m
 
   ##########
