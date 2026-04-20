@@ -81,6 +81,7 @@ services:
       - ./traefik-conf/dynamic.toml:/etc/traefik/dynamic.toml:ro
       - ./data/ecs/ca/:/etc/ecs-ca/:ro
       - ./data/acme:/etc/traefik/acme
+      - ./data/traefik-logs:/var/log/traefik
     ports:
       - "25:25"
       - 80:80
@@ -106,11 +107,13 @@ services:
     container_name: crowdsec
     restart: unless-stopped
     environment:
-      COLLECTIONS: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+      COLLECTIONS: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/appsec-crs
     volumes:
       - ./crowdsec/config:/etc/crowdsec
       - ./crowdsec/data:/var/lib/crowdsec/data
       - ./crowdsec/appsec.yaml:/etc/crowdsec/acquis.d/appsec.yaml
+      - ./crowdsec/traefik.yaml:/etc/crowdsec/acquis.d/traefik.yaml
+      - ./data/traefik-logs:/var/log/traefik:ro
 
   #######
   # ECS #

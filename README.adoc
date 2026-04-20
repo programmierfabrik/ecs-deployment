@@ -179,6 +179,18 @@ Start the CrowdSec container:
 docker compose up -d crowdsec
 ----
 
+Install the required collections:
+
+[source,bash]
+----
+docker exec crowdsec cscli collections install \
+  crowdsecurity/traefik \
+  crowdsecurity/http-cve \
+  crowdsecurity/base-http-scenarios \
+  crowdsecurity/http-dos \
+  crowdsecurity/appsec-crs
+----
+
 Generate a bouncer API key and add it to your `.env` file as `CROWDSEC_BOUNCER_KEY`:
 
 [source,bash]

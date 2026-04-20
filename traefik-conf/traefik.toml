@@ -35,6 +35,9 @@
   filename = "/etc/traefik/dynamic.toml"
 
 
+[accessLog]
+  filePath = "/var/log/traefik/access.log"
+
 [experimental.plugins.bouncer]
   moduleName = 'github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin'
   version = 'v1.6.0-alpha'
