@@ -170,6 +170,22 @@ IMPORTANT: Wait until the `migration` AND `bootstrap` are finished
 docker compose up -d ecs.web && docker compose logs -f
 ----
 
+=== CrowdSec
+
+Start the CrowdSec container:
+
+[source,bash]
+----
+docker compose up -d crowdsec
+----
+
+Generate a bouncer API key and add it to your `.env` file as `CROWDSEC_BOUNCER_KEY`:
+
+[source,bash]
+----
+docker exec crowdsec cscli bouncers add traefik-bouncer
+----
+
 === Traefik reverse proxy
 
 No container is connected to the outside world. With the reverse proxy all the needed containers can be exposed:
