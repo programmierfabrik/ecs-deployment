@@ -37,4 +37,4 @@
 
 [experimental.plugins.bouncer]
   moduleName = 'github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin'
-  version = v1.6.0-alpha
+  version = 'v1.6.0-alpha'
