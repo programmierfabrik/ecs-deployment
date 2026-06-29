@@ -1,0 +1,14 @@
+services:
+  whoami:
+    image: traefik/whoami
+    container_name: ecs_whoami
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entryPoints=web-secure
+      - traefik.http.routers.whoami.rule=Host(`mail.${HOST}`) && PathPrefix(`/whoami`)
+      - traefik.http.routers.whoami.middlewares=crowdsec@docker
+
+networks:
+  default:
+    name: ecs-reverse-proxy
+    external: true
