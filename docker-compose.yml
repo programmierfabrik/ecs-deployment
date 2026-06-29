@@ -54,7 +54,8 @@ services:
       - PERMIT_DOCKER=host
       - SMTP_ONLY=1
       - SSL_TYPE=letsencrypt
-      - ENABLE-RSPAMD=1
+      - ENABLE_OPENDKIM=0
+      - ENABLE_RSPAMD=1
     volumes:
       - ./data/mailserver/mail-data/:/var/mail/
       - ./data/mailserver/mail-state/:/var/mail-state/
