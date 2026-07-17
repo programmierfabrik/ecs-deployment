@@ -54,11 +54,12 @@ services:
       - PERMIT_DOCKER=host
       - SMTP_ONLY=1
       - SSL_TYPE=letsencrypt
-      - ENABLE_OPENDKIM=0
       - ENABLE_RSPAMD=1
-      - ENABLE_AMAVIS=0
+      - ENABLE_OPENDKIM=0
       - ENABLE_OPENDMARC=0
       - ENABLE_POLICYD_SPF=0
+      - ENABLE_AMAVIS=0
+      - ENABLE_SPAMASSASSIN=0
       - POSTFIX_INET_PROTOCOLS=ipv4
     volumes:
       - ./data/mailserver/mail-data/:/var/mail/
