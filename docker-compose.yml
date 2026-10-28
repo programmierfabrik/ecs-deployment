@@ -115,6 +115,8 @@ services:
     restart: unless-stopped
     environment:
       COLLECTIONS: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules crowdsecurity/appsec-crs
+      # ECS answers 403 by design without a valid client cert; behind a shared NAT this bans whole institutions
+      DISABLE_SCENARIOS: LePresidente/http-generic-403-bf
     volumes:
       - ./crowdsec/config:/etc/crowdsec
       - ./crowdsec/data:/var/lib/crowdsec/data
