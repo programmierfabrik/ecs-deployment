@@ -198,6 +198,17 @@ Generate a bouncer API key and add it to your `.env` file as `CROWDSEC_BOUNCER_K
 docker exec crowdsec cscli bouncers add traefik-bouncer
 ----
 
+Disable the generic 403 brute-force scenario. ECS answers with 403 by design when a client has no valid certificate, so behind a shared NAT (e.g. a university network) a few users without a working certificate get the whole institution banned:
+
+[source,bash]
+----
+docker exec crowdsec cscli scenarios remove LePresidente/http-generic-403-bf
+docker restart crowdsec
+----
+
+The change is stored in `./crowdsec/config` and survives restarts and upgrades.
+If `cscli scenarios list | grep 403` prints nothing, the scenario is already removed.
+
 === Traefik reverse proxy
 
 No container is connected to the outside world. With the reverse proxy all the needed containers can be exposed:
