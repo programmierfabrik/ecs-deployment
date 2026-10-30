@@ -205,7 +205,7 @@ services:
       - ./volatile/redis:/data
 
   pdfas:
-    image: ghcr.io/programmierfabrik/pdf-as-web:4.2.0
+    image: ghcr.io/programmierfabrik/pdf-as-web:5.0.0
     container_name: ecs_pdfas
     restart: always
     environment:
